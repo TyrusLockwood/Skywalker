@@ -13,6 +13,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "better-scroll": "^1.15.2",
     "core-js": "^3.6.4",
     "electron-json-storage": "^4.1.8",
     "vue": "^2.6.11",

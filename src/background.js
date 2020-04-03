@@ -25,11 +25,15 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: tru
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1240,
+    height: 650,
     webPreferences: {
       nodeIntegration: true
     }
+  })
+
+  win.webContents.on('did-finish-load', () => {
+    win.webContents.send('skywalker', skywalkerArr)
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -69,6 +73,7 @@ function skywalker () {
           currentValue = newValue
           skywalkerArr.push(currentValue)
           // console.log('------ skywalkerArr:', skywalkerArr)
+          win.webContents.send('skywalker', skywalkerArr)
           storage.set('skywalker', {
             skywalkerArr: skywalkerArr
           }, err => {
