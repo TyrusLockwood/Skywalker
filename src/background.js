@@ -26,12 +26,13 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
     width: 1240,
-    height: 800,
+    height: 1000,
     webPreferences: {
       nodeIntegration: true
     }
   })
 
+  // 加载完成后把storage传给渲染进程
   win.webContents.on('did-finish-load', () => {
     storage.get('skywalker', (err, data) => {
       if (err) throw err
@@ -111,8 +112,11 @@ function skywalker () {
 
   // 监听清除storage事件
   ipcMain.on('clear-data', function (event, arg) {
-    storage.clear(error => {
-      if (error) throw error
+    // 这里只是清空storage中的skywalker 不要清空storage所有的数据
+    storage.set('skywalker', {
+      skywalkerArr: []
+    }, err => {
+      if (err) throw err
       console.log('clear successed')
     })
   })

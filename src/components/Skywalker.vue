@@ -55,28 +55,38 @@ export default {
       })
 
       // 获取所有item
-      this.tabItem = document.querySelectorAll('.item')
-      console.log('tabItem.length:', this.tabItem.length)
+      this.listItem = document.querySelectorAll('.item')
+      console.log('listItem.length:', this.listItem.length)
     },
     onKeyDownListen (d, k) {
       d.addEventListener('keydown', e => {
         if (e.keyCode === k) {
           if (k === 37) {
-            console.log('<-')
+            console.log('<-', this.active)
+            const moveItem = this.active !== 0 ? this.active - 1 : 0
+            this.itemActive(moveItem)
           } else if (k === 39) {
-            console.log('->')
+            console.log('->', this.active)
+            const moveItem = this.active !== this.listData.length - 1
+              ? this.active + 1
+              : this.active
+            this.itemActive(moveItem)
           }
         }
       })
     },
     itemActive (idx) {
       // 选中项滚动到屏幕中间
-      this.scrollX.scrollToElement(this.tabItem[idx], 500, true, false)
+      this.scrollX.scrollToElement(this.listItem[idx], 500, true, false)
       this.active = idx
     },
     clear () {
       ipcRenderer.send('clear-data', 1)
       this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
+      // 获取所有item
+      this.$nextTick(() => {
+        this.listItem = document.querySelectorAll('.item')
+      })
     }
   }
 }
