@@ -7,6 +7,7 @@
         v-for="(item, index) in listData"
         :key="index" >{{ item }}</li>
     </ul>
+    <div class="clear" @click="clear">clear</div>
   </div>
 </template>
 
@@ -18,7 +19,8 @@ export default {
   data () {
     return {
       active: 0,
-      listData: []
+      listData: [],
+      scrollX: null
     }
   },
   mounted () {
@@ -34,6 +36,7 @@ export default {
         ? this.listData = [123, 445, 453, 768, 8, 9, 234]
         : this.listData = message.skywalkerArr
       console.log('this.listData:', this.listData)
+      this.betterScrollInit()
     })
   },
   methods: {
@@ -48,6 +51,7 @@ export default {
 
       // 获取所有item
       this.tabItem = document.querySelectorAll('.item')
+      console.log('tabItem.length:', this.tabItem.length)
     },
     onKeyDownListen (d, k) {
       d.addEventListener('keydown', e => {
@@ -64,6 +68,9 @@ export default {
       // 选中项滚动到屏幕中间
       this.scrollX.scrollToElement(this.tabItem[idx], 800, true, false)
       this.active = idx
+    },
+    clear () {
+
     }
   }
 }
@@ -103,6 +110,23 @@ export default {
         &:hover {
           color: #2c3e50;
         }
+      }
+    }
+
+    .clear {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      height: 20px;
+      padding: 4px 10px;
+      border-radius: 10px;
+      background-color: #fff;
+      color: #999;
+      box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
+
+      &:hover {
+        color: #2c3e50;
+        transform: scale(1.02, 1.02);
       }
     }
   }

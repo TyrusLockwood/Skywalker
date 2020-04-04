@@ -13,7 +13,7 @@ const storage = require('electron-json-storage')
 // 设置存储路径
 storage.setDataPath(os.tmpdir())
 
-const skywalkerArr = []
+let skywalkerArr = []
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -33,7 +33,11 @@ function createWindow () {
   })
 
   win.webContents.on('did-finish-load', () => {
-    win.webContents.send('skywalker', skywalkerArr)
+    storage.get('skywalker', (err, data) => {
+      if (err) throw err
+      console.log('storage:', data)
+      win.webContents.send('skywalker', data)
+    })
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -71,19 +75,23 @@ function skywalker () {
         const newValue = clipboard.readText()
         if (currentValue !== newValue) {
           currentValue = newValue
-          skywalkerArr.push(currentValue)
-          // console.log('------ skywalkerArr:', skywalkerArr)
-          win.webContents.send('skywalker', skywalkerArr)
-          storage.set('skywalker', {
-            skywalkerArr: skywalkerArr
-          }, err => {
-            if (err) throw err
-          })
 
+          // 先从storage中取出原有数据
           storage.get('skywalker', (err, data) => {
             if (err) throw err
             console.log('storage:', data)
-            win.webContents.send('skywalker', data)
+            skywalkerArr = data.skywalkerArr
+            // 存入新值
+            skywalkerArr.unshift(currentValue)
+
+            // 存入带有新值的数组到storage中
+            storage.set('skywalker', {
+              skywalkerArr: skywalkerArr
+            }, err => {
+              if (err) throw err
+              // 发送数据到渲染进程
+              win.webContents.send('skywalker', data)
+            })
           })
         }
       } catch (error) {
@@ -100,6 +108,14 @@ function skywalker () {
       win.focus()
     })
   }
+}
+
+// 清除storage
+function clearSkywalker () {
+  storage.clear(error => {
+    if (error) throw error
+    console.log('clear successed')
+  })
 }
 
 // skywalker end ---------
