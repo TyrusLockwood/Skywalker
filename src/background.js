@@ -120,6 +120,12 @@ function skywalker () {
       console.log('clear successed')
     })
   })
+
+  // 监听copy事件
+  ipcMain.on('close-window', function (event, arg) {
+    console.log(arg)
+    win.hide()
+  })
 }
 
 // skywalker end ---------

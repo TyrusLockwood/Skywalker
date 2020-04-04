@@ -14,6 +14,7 @@
 <script>
 import BScroll from 'better-scroll'
 import { ipcRenderer } from 'electron'
+const { clipboard } = require('electron').remote
 export default {
   name: 'Skywalker',
   data () {
@@ -28,6 +29,7 @@ export default {
     this.onIpcListen()
     this.onKeyDownListen(doc, 37)
     this.onKeyDownListen(doc, 39)
+    this.onCopyListen(doc)
   },
   methods: {
     // 滚动初始化
@@ -79,6 +81,17 @@ export default {
         }
       })
     },
+    onCopyListen (d) {
+      d.addEventListener('keydown', e => {
+        if (e.keyCode === 67 && e.metaKey) {
+          console.log(this.listData[this.active])
+          // 写入剪贴板
+          clipboard.writeText(this.listData[this.active])
+          // 主进程关闭窗口
+          ipcRenderer.send('close-window', 1)
+        }
+      })
+    },
     // 当前选中项
     itemActive (idx) {
       // 选中项滚动到屏幕中间
@@ -87,6 +100,7 @@ export default {
     },
     // 清除数据
     clear () {
+      // 主进程清除数据
       ipcRenderer.send('clear-data', 1)
       // 数据还原
       this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
