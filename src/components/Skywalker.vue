@@ -24,19 +24,24 @@ export default {
     }
   },
   mounted () {
-    this.betterScrollInit()
-
     const doc = document
     this.onKeyDownListen(doc, 37)
     this.onKeyDownListen(doc, 39)
 
     ipcRenderer.on('skywalker', (event, message) => {
       console.log('msg:', message)
-      message.length === 0
-        ? this.listData = [123, 445, 453, 768, 8, 9, 234]
+
+      // 空数据判断
+      !message.skywalkerArr || message.skywalkerArr.length === 0
+        ? this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
         : this.listData = message.skywalkerArr
+
       console.log('this.listData:', this.listData)
-      this.betterScrollInit()
+
+      // 数据渲染完成后 初始化滚动
+      this.$nextTick(() => {
+        this.betterScrollInit()
+      })
     })
   },
   methods: {
@@ -66,11 +71,12 @@ export default {
     },
     itemActive (idx) {
       // 选中项滚动到屏幕中间
-      this.scrollX.scrollToElement(this.tabItem[idx], 800, true, false)
+      this.scrollX.scrollToElement(this.tabItem[idx], 500, true, false)
       this.active = idx
     },
     clear () {
-
+      ipcRenderer.send('clear-data', 1)
+      this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
     }
   }
 }
@@ -99,11 +105,11 @@ export default {
         box-sizing: border-box;
         box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
         background-color: #fff;
-        transition: transform .8s, color .4s;
+        transition: transform .5s, color .4s;
         color: #999;
 
         &.item-acitve {
-          transform: scale(1.02, 1.02);
+          transform: scale(1.04, 1.04);
           color: #2c3e50;
         }
 
@@ -121,12 +127,19 @@ export default {
       padding: 4px 10px;
       border-radius: 10px;
       background-color: #fff;
+      text-align: center;
+      line-height: 20px;
       color: #999;
+      cursor: pointer;
       box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
 
       &:hover {
         color: #2c3e50;
-        transform: scale(1.02, 1.02);
+        transform: scale(1.04, 1.04);
+      }
+
+      &:active {
+        box-shadow: 0px 2px 8px 0px rgba(137, 159, 185, .5);
       }
     }
   }

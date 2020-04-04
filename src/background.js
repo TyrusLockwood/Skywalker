@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, clipboard, globalShortcut } from 'electron'
+import { app, protocol, BrowserWindow, clipboard, globalShortcut, ipcMain } from 'electron'
 import {
   createProtocol
   /* installVueDevtools */
@@ -26,7 +26,7 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
     width: 1240,
-    height: 650,
+    height: 800,
     webPreferences: {
       nodeIntegration: true
     }
@@ -80,7 +80,7 @@ function skywalker () {
           storage.get('skywalker', (err, data) => {
             if (err) throw err
             console.log('storage:', data)
-            skywalkerArr = data.skywalkerArr
+            skywalkerArr = data.skywalkerArr ? data.skywalkerArr : []
             // 存入新值
             skywalkerArr.unshift(currentValue)
 
@@ -108,13 +108,13 @@ function skywalker () {
       win.focus()
     })
   }
-}
 
-// 清除storage
-function clearSkywalker () {
-  storage.clear(error => {
-    if (error) throw error
-    console.log('clear successed')
+  // 监听清除storage事件
+  ipcMain.on('clear-data', function (event, arg) {
+    storage.clear(error => {
+      if (error) throw error
+      console.log('clear successed')
+    })
   })
 }
 
