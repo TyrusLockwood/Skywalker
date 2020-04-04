@@ -25,24 +25,9 @@ export default {
   },
   mounted () {
     const doc = document
+    this.onIpcListen()
     this.onKeyDownListen(doc, 37)
     this.onKeyDownListen(doc, 39)
-
-    ipcRenderer.on('skywalker', (event, message) => {
-      console.log('msg:', message)
-
-      // 空数据判断
-      !message.skywalkerArr || message.skywalkerArr.length === 0
-        ? this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
-        : this.listData = message.skywalkerArr
-
-      console.log('this.listData:', this.listData)
-
-      // 数据渲染完成后 初始化滚动
-      this.$nextTick(() => {
-        this.betterScrollInit()
-      })
-    })
   },
   methods: {
     // 滚动初始化
@@ -58,6 +43,25 @@ export default {
       this.listItem = document.querySelectorAll('.item')
       console.log('listItem.length:', this.listItem.length)
     },
+    // 监听主/渲染进程交互
+    onIpcListen () {
+      ipcRenderer.on('skywalker', (event, message) => {
+        console.log('msg:', message)
+
+        // 空数据判断
+        !message.skywalkerArr || message.skywalkerArr.length === 0
+          ? this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
+          : this.listData = message.skywalkerArr
+
+        console.log('this.listData:', this.listData)
+
+        // 数据渲染完成后 初始化滚动
+        this.$nextTick(() => {
+          this.betterScrollInit()
+        })
+      })
+    },
+    // 监听键盘事件
     onKeyDownListen (d, k) {
       d.addEventListener('keydown', e => {
         if (e.keyCode === k) {
@@ -75,15 +79,20 @@ export default {
         }
       })
     },
+    // 当前选中项
     itemActive (idx) {
       // 选中项滚动到屏幕中间
       this.scrollX.scrollToElement(this.listItem[idx], 500, true, false)
       this.active = idx
     },
+    // 清除数据
     clear () {
       ipcRenderer.send('clear-data', 1)
+      // 数据还原
       this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
-      // 获取所有item
+      // 选中第一项
+      this.active = 0
+      // 重新获取所有item
       this.$nextTick(() => {
         this.listItem = document.querySelectorAll('.item')
       })
