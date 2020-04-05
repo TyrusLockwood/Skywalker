@@ -8,6 +8,9 @@ storage.setDataPath(os.tmpdir())
 // 设置存储数组
 let skywalkerArr = []
 
+// 存储的数量限制 超出删除
+const limit = 20
+
 // 默认文本
 const defaultArr = [
   '欢迎使用 Skywalker !',
@@ -42,6 +45,11 @@ export function skywalker (win) {
 
             // 存入新值
             skywalkerArr.unshift(currentValue)
+
+            // 存储数量限制 清除多余数据
+            if (skywalkerArr.length > limit) {
+              skywalkerArr.pop()
+            }
 
             // 存入带有新值的数组到storage中
             storage.set('skywalker', {

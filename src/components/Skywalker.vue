@@ -1,6 +1,6 @@
 <template>
   <div class="container" ref="wrap">
-    <ul class="skywalkerBox">
+    <ul class="skywalkerBox" :style="`width: ${skywalkerBoxWidth}px`">
       <li class="item"
         @click="itemActive(index)"
         :class="index === active ? 'item-acitve' : ''"
@@ -29,6 +29,12 @@ export default {
       active: 0,
       listData: [],
       scrollX: null
+    }
+  },
+
+  computed: {
+    skywalkerBoxWidth () {
+      return this.listData.length * 310
     }
   },
 
