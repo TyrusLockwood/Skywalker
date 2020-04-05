@@ -3,6 +3,7 @@
     <ul class="skywalkerBox">
       <li class="item"
         @click="itemActive(index)"
+        @dblclick="itemActiveDoub(index)"
         :class="index === active ? 'item-acitve' : ''"
         v-for="(item, index) in listData"
         :key="index" >{{ item }}</li>
@@ -15,8 +16,10 @@
 import BScroll from 'better-scroll'
 import { ipcRenderer } from 'electron'
 const { clipboard } = require('electron').remote
+
 export default {
   name: 'Skywalker',
+
   data () {
     return {
       active: 0,
@@ -24,6 +27,7 @@ export default {
       scrollX: null
     }
   },
+
   mounted () {
     const doc = document
     this.onIpcListen()
@@ -31,6 +35,7 @@ export default {
     this.onKeyDownListen(doc, 39)
     this.onCopyListen(doc)
   },
+
   methods: {
     // 滚动初始化
     betterScrollInit () {
@@ -38,23 +43,21 @@ export default {
         probeType: 3,
         scrollX: true,
         scrollY: false,
-        click: true
+        tap: true
       })
 
       // 获取所有item
       this.listItem = document.querySelectorAll('.item')
       console.log('listItem.length:', this.listItem.length)
     },
+
     // 监听主/渲染进程交互
     onIpcListen () {
       ipcRenderer.on('skywalker', (event, message) => {
         console.log('msg:', message)
 
-        // 空数据判断
-        !message.skywalkerArr || message.skywalkerArr.length === 0
-          ? this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
-          : this.listData = message.skywalkerArr
-
+        // 更新数据
+        this.listData = message.skywalkerArr
         console.log('this.listData:', this.listData)
 
         // 数据渲染完成后 初始化滚动
@@ -63,16 +66,17 @@ export default {
         })
       })
     },
+
     // 监听键盘事件
     onKeyDownListen (d, k) {
       d.addEventListener('keydown', e => {
         if (e.keyCode === k) {
           if (k === 37) {
-            console.log('<-', this.active)
+            // 左箭头
             const moveItem = this.active !== 0 ? this.active - 1 : 0
             this.itemActive(moveItem)
           } else if (k === 39) {
-            console.log('->', this.active)
+            // 右箭头
             const moveItem = this.active !== this.listData.length - 1
               ? this.active + 1
               : this.active
@@ -81,34 +85,54 @@ export default {
         }
       })
     },
+
+    // 监听复制事件
     onCopyListen (d) {
       d.addEventListener('keydown', e => {
         if (e.keyCode === 67 && e.metaKey) {
-          console.log(this.listData[this.active])
-          // 写入剪贴板
-          clipboard.writeText(this.listData[this.active])
-          // 主进程关闭窗口
-          ipcRenderer.send('close-window', 1)
+          this.writeDataAndClose(this.listData[this.active])
         }
       })
     },
+
     // 当前选中项
     itemActive (idx) {
       // 选中项滚动到屏幕中间
-      this.scrollX.scrollToElement(this.listItem[idx], 500, true, false)
+      this.scrollX.scrollToElement(this.listItem[idx], 300, true, false)
       this.active = idx
     },
+
+    // 双击事件
+    itemActiveDoub (idx) {
+      console.log(idx)
+      if (this.active === idx) {
+        this.writeDataAndClose(this.listData[this.active])
+      }
+    },
+
+    // 写入数据并关闭窗口
+    writeDataAndClose (data) {
+      console.log('writeDataAndClose:', data)
+
+      // 写入剪贴板
+      clipboard.writeText(data)
+
+      // 主进程关闭窗口
+      ipcRenderer.send('close-window', 1)
+    },
+
     // 清除数据
     clear () {
       // 主进程清除数据
       ipcRenderer.send('clear-data', 1)
-      // 数据还原
-      this.listData = ['欢迎使用 Skywalker !', '你可以尝试多次复制文本', '通过快捷键调起面板', '查找你刚刚复制过的文本', '遇到问题请与我联系', 'tyrusl@163.com']
+
       // 选中第一项
       this.active = 0
+
       // 重新获取所有item
       this.$nextTick(() => {
         this.listItem = document.querySelectorAll('.item')
+        this.scrollX.scrollToElement(this.listItem[0], 300, true, false)
       })
     }
   }
@@ -138,7 +162,7 @@ export default {
         box-sizing: border-box;
         box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
         background-color: #fff;
-        transition: transform .5s, color .4s;
+        transition: transform .3s, color .4s;
         color: #999;
 
         &.item-acitve {

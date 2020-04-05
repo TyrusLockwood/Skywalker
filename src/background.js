@@ -1,19 +1,15 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, clipboard, globalShortcut, ipcMain } from 'electron'
+import { app, protocol, BrowserWindow } from 'electron'
+
+// 剪贴板功能
+import { skywalker } from './skywalker'
+
 import {
   createProtocol
   /* installVueDevtools */
 } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
-const os = require('os')
-const storage = require('electron-json-storage')
-
-// 设置存储路径
-storage.setDataPath(os.tmpdir())
-
-let skywalkerArr = []
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -32,15 +28,6 @@ function createWindow () {
     }
   })
 
-  // 加载完成后把storage传给渲染进程
-  win.webContents.on('did-finish-load', () => {
-    storage.get('skywalker', (err, data) => {
-      if (err) throw err
-      console.log('storage:', data)
-      win.webContents.send('skywalker', data)
-    })
-  })
-
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -51,84 +38,12 @@ function createWindow () {
     win.loadURL('app://./index.html')
   }
 
-  // 监听关闭主窗口 不退出应用
-  win.on('close', e => {
-    e.preventDefault()
-    win.hide()
-  })
-
   win.on('closed', () => {
     win = null
   })
 
-  skywalker()
+  skywalker(win)
 }
-
-// skywalker start ---------
-function skywalker () {
-  watcher()
-  hotKey()
-
-  function watcher () {
-    let currentValue = clipboard.readText()
-    setInterval(async () => {
-      try {
-        const newValue = clipboard.readText()
-        if (currentValue !== newValue) {
-          currentValue = newValue
-
-          // 先从storage中取出原有数据
-          storage.get('skywalker', (err, data) => {
-            if (err) throw err
-            console.log('storage:', data)
-            skywalkerArr = data.skywalkerArr ? data.skywalkerArr : []
-            // 存入新值
-            skywalkerArr.unshift(currentValue)
-
-            // 存入带有新值的数组到storage中
-            storage.set('skywalker', {
-              skywalkerArr: skywalkerArr
-            }, err => {
-              if (err) throw err
-              // 发送数据到渲染进程
-              win.webContents.send('skywalker', data)
-            })
-          })
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }, 200)
-  }
-
-  function hotKey () {
-    globalShortcut.register('CommandOrControl+Alt+s', () => {
-      console.log('CommandOrControl+Alt+s is clicked')
-      if (win.isMinimized()) win.restore()
-      win.show()
-      win.focus()
-    })
-  }
-
-  // 监听清除storage事件
-  ipcMain.on('clear-data', function (event, arg) {
-    // 这里只是清空storage中的skywalker 不要清空storage所有的数据
-    storage.set('skywalker', {
-      skywalkerArr: []
-    }, err => {
-      if (err) throw err
-      console.log('clear successed')
-    })
-  })
-
-  // 监听copy事件
-  ipcMain.on('close-window', function (event, arg) {
-    console.log(arg)
-    win.hide()
-  })
-}
-
-// skywalker end ---------
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
