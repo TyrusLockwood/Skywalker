@@ -3,7 +3,7 @@
 import { app, protocol, BrowserWindow } from 'electron'
 
 // 剪贴板功能
-import { skywalker } from './skywalker'
+import { skywalker } from './main/skywalker'
 
 import {
   createProtocol

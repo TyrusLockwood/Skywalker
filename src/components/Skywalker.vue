@@ -3,12 +3,16 @@
     <ul class="skywalkerBox">
       <li class="item"
         @click="itemActive(index)"
-        @dblclick="itemActiveDoub(index)"
         :class="index === active ? 'item-acitve' : ''"
         v-for="(item, index) in listData"
-        :key="index" >{{ item }}</li>
+        :key="index" >
+        <div class="item-container">
+          <span>{{ item }}</span>
+        </div>
+        <div v-show="index === active" class="item-copy" @click="copy">Copy</div>
+      </li>
     </ul>
-    <div class="clear" @click="clear">clear</div>
+    <div class="clear" @click="clear">Clear</div>
   </div>
 </template>
 
@@ -95,19 +99,16 @@ export default {
       })
     },
 
+    // 复制
+    copy () {
+      this.writeDataAndClose(this.listData[this.active])
+    },
+
     // 当前选中项
     itemActive (idx) {
       // 选中项滚动到屏幕中间
       this.scrollX.scrollToElement(this.listItem[idx], 300, true, false)
       this.active = idx
-    },
-
-    // 双击事件
-    itemActiveDoub (idx) {
-      console.log(idx)
-      if (this.active === idx) {
-        this.writeDataAndClose(this.listData[this.active])
-      }
     },
 
     // 写入数据并关闭窗口
@@ -157,7 +158,7 @@ export default {
         width: 300px;
         height: 400px;
         margin: 0 10px;
-        padding: 20px 14px;
+        padding: 20px 14px 6px;
         border-radius: 10px;
         box-sizing: border-box;
         box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
@@ -173,6 +174,47 @@ export default {
         &:hover {
           color: #2c3e50;
         }
+
+        .item-container {
+          display: block;
+          width: 100%;
+          height: calc(100% - 30px);
+          overflow-x: hidden;
+          overflow-y: auto;
+
+          span {
+            display: block;
+            overflow: hidden;
+          }
+
+          &::-webkit-scrollbar {
+              /*滚动条整体样式*/
+              width: 1px;
+              background-color: #fff;
+          }
+          &::-webkit-scrollbar-thumb {
+              /*滚动条整体样式*/
+              width: 1px;
+              background: rgba(44, 62, 80, .2);
+          }
+        }
+
+        .item-copy {
+          width: 50px;
+          height: 20px;
+          line-height: 20px;
+          margin-top: 10px;
+          font-size: 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          text-align: center;
+          background-color: #fff;
+          box-shadow: 0px 1px 4px 0px rgba(137, 159, 185, .5);
+
+          &:active {
+            box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .5)
+          }
+        }
       }
     }
 
@@ -182,7 +224,7 @@ export default {
       left: 10px;
       height: 20px;
       padding: 4px 10px;
-      border-radius: 10px;
+      border-radius: 6px;
       background-color: #fff;
       text-align: center;
       line-height: 20px;
