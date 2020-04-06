@@ -11,10 +11,10 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
-  "dist_electron": {
+  "build": {
     "productName": "Skywalker",
     "mac": {
-      "icon": "iconTemplate@2x.png"
+      "icon": "dist_electron/icons/iconTemplate@2x.png"
     }
   },
   "main": "background.js",
