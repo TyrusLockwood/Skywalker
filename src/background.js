@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Tray, Menu } from 'electron'
 
 // 剪贴板功能
 import { skywalker } from './main/skywalker'
@@ -9,11 +9,15 @@ import {
   createProtocol
   /* installVueDevtools */
 } from 'vue-cli-plugin-electron-builder/lib'
+
+const path = require('path')
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win = null
+
+let tray = null
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
@@ -81,6 +85,23 @@ app.on('ready', async () => {
 
   }
   createWindow()
+
+  // 系统托盘
+  tray = new Tray(path.join(__dirname, 'iconTemplate@2x.png'))
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: '显示面板',
+      click: () => {
+        app.show()
+        app.focus()
+      }
+    },
+    {
+      label: '退出 Skywalker',
+      click: () => app.exit()
+    }
+  ])
+  tray.setContextMenu(contextMenu)
 })
 
 // Exit cleanly on request from parent process in development mode.

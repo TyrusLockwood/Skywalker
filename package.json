@@ -11,6 +11,12 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
+  "build": {
+    "productName": "Skywalker",
+    "mac": {
+      "icon": "dist_electron/icons/iconTemplate@2x.png"
+    }
+  },
   "main": "background.js",
   "dependencies": {
     "better-scroll": "^1.15.2",
