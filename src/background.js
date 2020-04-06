@@ -92,8 +92,8 @@ app.on('ready', async () => {
     {
       label: '显示面板',
       click: () => {
-        app.show()
-        app.focus()
+        win.show()
+        win.focus()
       }
     },
     {
