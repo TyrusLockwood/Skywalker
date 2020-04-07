@@ -31,7 +31,7 @@ function createWindow () {
       nodeIntegration: true
     },
     // 窗口是否总是显示在其他窗口之前
-    // alwaysOnTop: true,
+    alwaysOnTop: true,
     // 是否可全屏
     fullscreen: false,
     // 全屏化按钮是否可用
@@ -54,6 +54,11 @@ function createWindow () {
 
   win.on('closed', () => {
     win = null
+  })
+
+  // 失去焦点是隐藏窗口
+  win.on('blur', () => {
+    app.hide()
   })
 
   skywalker(win)
