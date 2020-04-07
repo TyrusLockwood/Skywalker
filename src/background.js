@@ -29,7 +29,17 @@ function createWindow () {
     height: 1000,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    // 窗口是否总是显示在其他窗口之前
+    // alwaysOnTop: true,
+    // 是否可全屏
+    fullscreen: false,
+    // 全屏化按钮是否可用
+    fullscreenable: false,
+    // 标题
+    title: 'Skywalker'
+    // 窗口标题栏样式
+    // titleBarStyle: 'hidden'
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
