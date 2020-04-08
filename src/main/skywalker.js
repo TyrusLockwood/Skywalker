@@ -110,7 +110,7 @@ export function skywalker (win, app) {
     })
   }
 
-  // 快捷键绑定
+  // 键盘监听
   function hotKey () {
     globalShortcut.register('CommandOrControl+Shift+v', () => {
       console.log('CommandOrControl+Shift+v is clicked')
@@ -118,6 +118,10 @@ export function skywalker (win, app) {
       if (win.isMinimized()) win.restore()
       win.show()
       win.focus()
+    })
+
+    globalShortcut.register('ESC', () => {
+      win.hide()
     })
   }
 

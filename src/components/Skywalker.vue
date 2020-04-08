@@ -96,16 +96,16 @@ export default {
       })
     },
 
-    // 监听复制事件
+    // 监听copy/enter事件
     onCopyListen (d) {
       d.addEventListener('keydown', e => {
-        if (e.keyCode === 67 && e.metaKey) {
+        if ((e.keyCode === 67 && e.metaKey) || e.keyCode === 13) {
           this.writeDataAndClose(this.listData[this.active])
         }
       })
     },
 
-    // 复制
+    // copy
     copy () {
       this.writeDataAndClose(this.listData[this.active])
     },
