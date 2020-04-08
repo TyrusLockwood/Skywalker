@@ -41,8 +41,6 @@ export default {
   mounted () {
     const doc = document
     this.onIpcListen()
-    this.onKeyDownListen(doc, 37)
-    this.onKeyDownListen(doc, 39)
     this.onCopyListen(doc)
   },
 
@@ -77,30 +75,21 @@ export default {
       })
     },
 
-    // 监听键盘事件
-    onKeyDownListen (d, k) {
-      d.addEventListener('keydown', e => {
-        if (e.keyCode === k) {
-          if (k === 37) {
-            // 左箭头
-            const moveItem = this.active !== 0 ? this.active - 1 : 0
-            this.itemActive(moveItem)
-          } else if (k === 39) {
-            // 右箭头
-            const moveItem = this.active !== this.listData.length - 1
-              ? this.active + 1
-              : this.active
-            this.itemActive(moveItem)
-          }
-        }
-      })
-    },
-
-    // 监听copy/enter事件
+    // 监听copy/enter/esc/left/right事件
     onCopyListen (d) {
       d.addEventListener('keydown', e => {
         if ((e.keyCode === 67 && e.metaKey) || e.keyCode === 13) {
           this.writeDataAndClose(this.listData[this.active])
+        } else if (e.keyCode === 27) {
+          ipcRenderer.send('close-window', 1)
+        } else if (e.keyCode === 37) {
+          const moveItem = this.active !== 0 ? this.active - 1 : 0
+          this.itemActive(moveItem)
+        } else if (e.keyCode === 39) {
+          const moveItem = this.active !== this.listData.length - 1
+            ? this.active + 1
+            : this.active
+          this.itemActive(moveItem)
         }
       })
     },

@@ -22,6 +22,9 @@ const defaultArr = [
   'tyrusl@163.com'
 ]
 
+// 去除所有空格
+const trimAll = _s => _s.replace(/\s/g, '')
+
 export function skywalker (win, app) {
   windowConfig()
   watcher()
@@ -35,7 +38,7 @@ export function skywalker (win, app) {
     setInterval(async () => {
       try {
         const newValue = clipboard.readText()
-        if (currentValue !== newValue) {
+        if (currentValue !== newValue && trimAll(newValue) !== '') {
           currentValue = newValue
 
           // 先从storage中取出原有数据
@@ -66,7 +69,7 @@ export function skywalker (win, app) {
       } catch (error) {
         console.log(error)
       }
-    }, 200)
+    }, 400)
   }
 
   // 监听事件
@@ -118,10 +121,6 @@ export function skywalker (win, app) {
       if (win.isMinimized()) win.restore()
       win.show()
       win.focus()
-    })
-
-    globalShortcut.register('ESC', () => {
-      win.hide()
     })
   }
 
