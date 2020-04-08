@@ -112,8 +112,8 @@ export function skywalker (win, app) {
 
   // 快捷键绑定
   function hotKey () {
-    globalShortcut.register('CommandOrControl+Alt+s', () => {
-      console.log('CommandOrControl+Alt+s is clicked')
+    globalShortcut.register('CommandOrControl+Shift+v', () => {
+      console.log('CommandOrControl+Shift+v is clicked')
 
       if (win.isMinimized()) win.restore()
       win.show()
