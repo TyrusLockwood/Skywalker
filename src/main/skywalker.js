@@ -25,113 +25,113 @@ const defaultArr = [
 // 去除所有空格
 const trimAll = _s => _s.replace(/\s/g, '')
 
-export function skywalker (win, app) {
-  windowConfig()
-  watcher()
-  hotKey()
-  listener()
+// 观察剪贴板内容变化
+function watcher (win) {
+  let currentValue = clipboard.readText()
 
-  // 观察剪贴板内容变化
-  function watcher () {
-    let currentValue = clipboard.readText()
+  setInterval(async () => {
+    try {
+      const newValue = clipboard.readText()
+      if (currentValue !== newValue && trimAll(newValue) !== '') {
+        currentValue = newValue
 
-    setInterval(async () => {
-      try {
-        const newValue = clipboard.readText()
-        if (currentValue !== newValue && trimAll(newValue) !== '') {
-          currentValue = newValue
+        // 先从storage中取出原有数据
+        storage.get('skywalker', (err, data) => {
+          if (err) throw err
+          console.log('storage:', data)
+          skywalkerArr = data.skywalkerArr ? data.skywalkerArr : defaultArr
 
-          // 先从storage中取出原有数据
-          storage.get('skywalker', (err, data) => {
+          // 存入新值
+          skywalkerArr.unshift(currentValue)
+
+          // 存储数量限制 清除多余数据
+          if (skywalkerArr.length > limit) {
+            skywalkerArr.pop()
+          }
+
+          // 存入带有新值的数组到storage中
+          storage.set('skywalker', {
+            skywalkerArr: skywalkerArr
+          }, err => {
             if (err) throw err
-            console.log('storage:', data)
-            skywalkerArr = data.skywalkerArr ? data.skywalkerArr : defaultArr
 
-            // 存入新值
-            skywalkerArr.unshift(currentValue)
-
-            // 存储数量限制 清除多余数据
-            if (skywalkerArr.length > limit) {
-              skywalkerArr.pop()
-            }
-
-            // 存入带有新值的数组到storage中
-            storage.set('skywalker', {
-              skywalkerArr: skywalkerArr
-            }, err => {
-              if (err) throw err
-
-              // 发送数据到渲染进程
-              win.webContents.send('skywalker', data)
-            })
+            // 发送数据到渲染进程
+            win.webContents.send('skywalker', data)
           })
-        }
-      } catch (error) {
-        console.log(error)
+        })
       }
-    }, 400)
-  }
+    } catch (error) {
+      console.log(error)
+    }
+  }, 400)
+}
 
-  // 监听事件
-  function listener () {
-    // 监听清除storage事件
-    ipcMain.on('clear-data', function (event, arg) {
-      // 这里只是清空storage中的skywalker 不要清空storage所有的数据
-      storage.set('skywalker', {
-        skywalkerArr: defaultArr
-      }, err => {
-        if (err) throw err
-        console.log('clear successed')
+// 监听事件
+function listener (win) {
+  // 监听清除storage事件
+  ipcMain.on('clear-data', function (event, arg) {
+    // 这里只是清空storage中的skywalker 不要清空storage所有的数据
+    storage.set('skywalker', {
+      skywalkerArr: defaultArr
+    }, err => {
+      if (err) throw err
+      console.log('clear successed')
 
-        // 发送默认数据 到渲染进程
-        win.webContents.send('skywalker', { skywalkerArr: defaultArr })
-      })
+      // 发送默认数据 到渲染进程
+      win.webContents.send('skywalker', { skywalkerArr: defaultArr })
     })
+  })
 
-    // 监听copy事件
-    ipcMain.on('close-window', function (event, arg) {
-      win.hide()
+  // 监听copy事件
+  ipcMain.on('close-window', function (event, arg) {
+    win.hide()
+  })
+
+  // 加载完成后把storage传给渲染进程
+  win.webContents.on('did-finish-load', () => {
+    storage.get('skywalker', (err, data) => {
+      if (err) throw err
+
+      const origin = data.skywalkerArr && data.skywalkerArr.length > 0 ? data.skywalkerArr : defaultArr
+      console.log('origin:', origin)
+
+      // 发送数据到渲染进程
+      win.webContents.send('skywalker', { skywalkerArr: origin })
     })
+  })
 
-    // 加载完成后把storage传给渲染进程
-    win.webContents.on('did-finish-load', () => {
-      storage.get('skywalker', (err, data) => {
-        if (err) throw err
+  // 监听关闭主窗口 不退出应用
+  win.on('close', e => {
+    e.preventDefault()
+    win.hide()
+  })
+}
 
-        const origin = data.skywalkerArr && data.skywalkerArr.length > 0 ? data.skywalkerArr : defaultArr
-        console.log('origin:', origin)
+// 键盘监听
+function hotKey (win) {
+  globalShortcut.register('CommandOrControl+Shift+v', () => {
+    console.log('CommandOrControl+Shift+v is clicked')
 
-        // 发送数据到渲染进程
-        win.webContents.send('skywalker', { skywalkerArr: origin })
-      })
-    })
+    if (win.isMinimized()) win.restore()
+    win.show()
+    win.focus()
+  })
+}
 
-    // 监听关闭主窗口 不退出应用
-    win.on('close', e => {
-      e.preventDefault()
-      win.hide()
-    })
-  }
+// 窗口设置
+function windowConfig (win, app) {
+  // 默认最大化 可使窗口贴底
+  win.maximize()
 
-  // 键盘监听
-  function hotKey () {
-    globalShortcut.register('CommandOrControl+Shift+v', () => {
-      console.log('CommandOrControl+Shift+v is clicked')
+  // 失去焦点时隐藏窗口
+  win.on('blur', () => {
+    app.hide()
+  })
+}
 
-      if (win.isMinimized()) win.restore()
-      win.show()
-      win.focus()
-    })
-  }
-
-  // 窗口设置
-  function windowConfig () {
-    // 默认最大化 可使窗口贴底
-    win.maximize()
-
-    // 失去焦点时隐藏窗口
-    win.on('blur', () => {
-      app.hide()
-    })
-  }
+export function skywalker (win, app) {
+  watcher(win)
+  listener(win)
+  hotKey(win)
+  windowConfig(win, app)
 }
