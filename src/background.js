@@ -25,8 +25,8 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: tru
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 1240,
-    height: 1000,
+    width: 1875,
+    height: 560,
     webPreferences: {
       nodeIntegration: true
     },
@@ -37,9 +37,11 @@ function createWindow () {
     // 全屏化按钮是否可用
     fullscreenable: false,
     // 标题
-    title: 'Skywalker'
+    title: 'Skywalker',
     // 窗口标题栏样式
-    // titleBarStyle: 'hidden'
+    titleBarStyle: 'hidden',
+    // 是否可以改变窗口size
+    resizable: false
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -56,12 +58,8 @@ function createWindow () {
     win = null
   })
 
-  // 失去焦点是隐藏窗口
-  win.on('blur', () => {
-    app.hide()
-  })
-
-  skywalker(win)
+  // 执行 skywalker
+  skywalker(win, app)
 }
 
 // Quit when all windows are closed.
@@ -102,7 +100,7 @@ app.on('ready', async () => {
   createWindow()
 
   // 系统托盘
-  tray = new Tray(path.resolve(app.getAppPath(), './iconTemplate@2x.png'))
+  tray = new Tray(path.resolve(__dirname, './iconTemplate@2x.png'))
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '显示面板',

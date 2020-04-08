@@ -22,7 +22,8 @@ const defaultArr = [
   'tyrusl@163.com'
 ]
 
-export function skywalker (win) {
+export function skywalker (win, app) {
+  windowConfig()
   watcher()
   hotKey()
   listener()
@@ -117,6 +118,17 @@ export function skywalker (win) {
       if (win.isMinimized()) win.restore()
       win.show()
       win.focus()
+    })
+  }
+
+  // 窗口设置
+  function windowConfig () {
+    // 默认最大化 可使窗口贴底
+    win.maximize()
+
+    // 失去焦点时隐藏窗口
+    win.on('blur', () => {
+      app.hide()
     })
   }
 }

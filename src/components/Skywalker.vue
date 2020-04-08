@@ -226,8 +226,8 @@ export default {
 
     .clear {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: 20px;
+      right: 20px;
       height: 20px;
       padding: 4px 10px;
       border-radius: 6px;
