@@ -30,38 +30,34 @@ function watcher (win) {
   let currentValue = clipboard.readText()
 
   setInterval(async () => {
-    try {
-      const newValue = clipboard.readText()
-      if (currentValue !== newValue && trimAll(newValue) !== '') {
-        currentValue = newValue
+    const newValue = clipboard.readText()
+    if (currentValue !== newValue && trimAll(newValue) !== '') {
+      currentValue = newValue
 
-        // 先从storage中取出原有数据
-        storage.get('skywalker', (err, data) => {
+      // 先从storage中取出原有数据
+      storage.get('skywalker', (err, data) => {
+        if (err) throw err
+        console.log('storage:', data)
+        skywalkerArr = data.skywalkerArr ? data.skywalkerArr : defaultArr
+
+        // 存入新值
+        skywalkerArr.unshift(currentValue)
+
+        // 存储数量限制 清除多余数据
+        if (skywalkerArr.length > limit) {
+          skywalkerArr.pop()
+        }
+
+        // 存入带有新值的数组到storage中
+        storage.set('skywalker', {
+          skywalkerArr: skywalkerArr
+        }, err => {
           if (err) throw err
-          console.log('storage:', data)
-          skywalkerArr = data.skywalkerArr ? data.skywalkerArr : defaultArr
 
-          // 存入新值
-          skywalkerArr.unshift(currentValue)
-
-          // 存储数量限制 清除多余数据
-          if (skywalkerArr.length > limit) {
-            skywalkerArr.pop()
-          }
-
-          // 存入带有新值的数组到storage中
-          storage.set('skywalker', {
-            skywalkerArr: skywalkerArr
-          }, err => {
-            if (err) throw err
-
-            // 发送数据到渲染进程
-            win.webContents.send('skywalker', data)
-          })
+          // 发送数据到渲染进程
+          win.webContents.send('skywalker', data)
         })
-      }
-    } catch (error) {
-      console.log(error)
+      })
     }
   }, 400)
 }

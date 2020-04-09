@@ -90,6 +90,8 @@ export default {
             ? this.active + 1
             : this.active
           this.itemActive(moveItem)
+        } else if (e.keyCode === 73 && e.metaKey && e.altKey) {
+          console.log('devtool')
         }
       })
     },
