@@ -12,7 +12,10 @@
         <div v-show="index === active" class="item-copy" @click="copy">Copy</div>
       </li>
     </ul>
-    <div class="clear" @click="clear">Clear</div>
+    <ul class="toolbar">
+      <li @click="itemActive(0)">Back</li>
+      <li class="clear" @click="clear">Clear</li>
+    </ul>
   </div>
 </template>
 
@@ -34,7 +37,7 @@ export default {
 
   computed: {
     skywalkerBoxWidth () {
-      return this.listData.length * 310
+      return this.listData.length * 300
     }
   },
 
@@ -124,13 +127,13 @@ export default {
       // 主进程清除数据
       ipcRenderer.send('clear-data', 1)
 
-      // 选中第一项
-      this.active = 0
-
       // 重新获取所有item
       this.$nextTick(() => {
         this.listItem = document.querySelectorAll('.item')
         this.scrollX.scrollToElement(this.listItem[0], 300, true, false)
+
+        // 选中第一项
+        this.active = 0
       })
     }
   }
@@ -146,15 +149,16 @@ export default {
     .skywalkerBox {
       width: 10000px;
       height: 100%;
-      padding: 0 5px;
+      padding: 0 20px;
       overflow: hidden;
       display: flex;
       align-items: center;
 
       .item {
         width: 300px;
-        height: 400px;
-        margin: 0 10px;
+        height: 360px;
+        // margin: 40px 10px 0;
+        margin-top: 30px;
         padding: 20px 14px 6px;
         border-radius: 10px;
         box-sizing: border-box;
@@ -175,7 +179,7 @@ export default {
         .item-container {
           display: block;
           width: 100%;
-          height: calc(100% - 30px);
+          height: calc(100% - 35px);
           overflow-x: hidden;
           overflow-y: auto;
 
@@ -198,9 +202,9 @@ export default {
 
         .item-copy {
           width: 50px;
-          height: 20px;
-          line-height: 20px;
-          margin-top: 10px;
+          height: 30px;
+          line-height: 30px;
+          margin-top: 5px;
           font-size: 12px;
           border-radius: 6px;
           cursor: pointer;
@@ -211,31 +215,66 @@ export default {
           &:active {
             box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .5)
           }
+
+          &:hover {
+            animation: hover-back .3s;
+          }
         }
       }
     }
 
-    .clear {
+    .toolbar {
       position: fixed;
       top: 20px;
       right: 20px;
-      height: 20px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background-color: #fff;
-      text-align: center;
-      line-height: 20px;
-      color: #999;
-      cursor: pointer;
-      box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
 
-      &:hover {
-        color: #2c3e50;
-        transform: scale(1.04, 1.04);
+      .clear {
+        color: deeppink;
+
+        &:hover {
+          color: deeppink;
+        }
       }
 
-      &:active {
-        box-shadow: 0px 2px 8px 0px rgba(137, 159, 185, .5);
+      li {
+        font-size: 12px;
+        margin-left: 15px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background-color: #fff;
+        text-align: center;
+        line-height: 20px;
+        color: #999;
+        cursor: pointer;
+        box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
+
+        &:active {
+          box-shadow: 0px 2px 8px 0px rgba(137, 159, 185, .5);
+        }
+
+        &:hover {
+          color: #2c3e50;
+          transform: scale(1.04, 1.04);
+          animation: hover-back .3s;
+        }
+
+        @keyframes hover-back {
+          25% {
+            transform: scale(1.2);
+          }
+
+          50% {
+            transform: scale(1);
+          }
+
+          75% {
+            transform: scale(1.1);
+          }
+        }
       }
     }
   }
