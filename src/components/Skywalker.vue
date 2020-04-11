@@ -75,6 +75,9 @@ export default {
         this.$nextTick(() => {
           this.betterScrollInit()
         })
+
+        // 如果有新数据 跳到起始位置
+        this.itemActive(0)
       })
     },
 

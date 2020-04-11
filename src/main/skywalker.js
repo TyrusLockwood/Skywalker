@@ -107,10 +107,8 @@ function listener (win) {
 function hotKey (win) {
   globalShortcut.register('CommandOrControl+Shift+v', () => {
     console.log('CommandOrControl+Shift+v is clicked')
-
-    if (win.isMinimized()) win.restore()
+    // if (win.isMinimized()) win.restore()
     win.show()
-    win.focus()
   })
 }
 
