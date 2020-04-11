@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Tray, Menu } from 'electron'
+import { app, protocol, BrowserWindow, Tray, Menu, screen } from 'electron'
 
 // 剪贴板功能
 import { skywalker } from './main/skywalker'
@@ -23,9 +23,13 @@ let tray = null
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
 
 function createWindow () {
+  // 获取主窗口尺寸
+  const size = screen.getPrimaryDisplay().size
+
   // Create the browser window.
   win = new BrowserWindow({
-    width: 1875,
+    width: size.width,
+    // width: 1875,
     height: 470,
     webPreferences: {
       nodeIntegration: true
