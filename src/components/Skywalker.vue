@@ -77,7 +77,9 @@ export default {
         })
 
         // 如果有新数据 跳到起始位置
-        this.itemActive(0)
+        if (this.active !== 0) {
+          this.itemActive(0)
+        }
       })
     },
 
