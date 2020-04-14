@@ -25,13 +25,32 @@ const defaultArr = [
 // 去除所有空格
 const trimAll = _s => _s.replace(/\s/g, '')
 
+function isImg () {
+  // [ 'text/plain', 'image/png' ]
+  const type = clipboard.availableFormats()
+  console.log('type:', type)
+  return type.some(i => i.split('/')[0] === 'image')
+}
+
 // 观察剪贴板内容变化
 function watcher (win) {
-  let currentValue = clipboard.readText()
+  let currentValue = null
+  // if (isImg()) {
+  //   currentValue = clipboard.readImage().toDataURL()
+  // } else {
+  //   currentValue = clipboard.readText()
+  // }
+  currentValue = clipboard.readText()
 
   setInterval(async () => {
-    const newValue = clipboard.readText()
-    if (currentValue !== newValue && trimAll(newValue) !== '') {
+    let newValue = null
+    if (isImg()) {
+      newValue = clipboard.readImage().toDataURL()
+      console.log('size:', clipboard.readImage().getSize())
+    } else {
+      newValue = clipboard.readText()
+    }
+    if (currentValue !== newValue && trimAll(newValue)) {
       currentValue = newValue
 
       // 先从storage中取出原有数据

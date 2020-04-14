@@ -22,7 +22,7 @@
 <script>
 import BScroll from 'better-scroll'
 import { ipcRenderer } from 'electron'
-const { clipboard } = require('electron').remote
+const { clipboard, nativeImage } = require('electron').remote
 
 export default {
   name: 'Skywalker',
@@ -121,7 +121,13 @@ export default {
       console.log('writeDataAndClose:', data)
 
       // 写入剪贴板
-      clipboard.writeText(data)
+      if (data.indexOf('data:image/') > -1) {
+        const image = nativeImage.createFromDataURL(data)
+        console.log('image:', image)
+        clipboard.writeImage(image)
+      } else {
+        clipboard.writeText(data)
+      }
 
       // 主进程关闭窗口
       ipcRenderer.send('close-window', 1)
