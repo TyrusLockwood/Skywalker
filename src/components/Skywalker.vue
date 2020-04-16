@@ -37,7 +37,7 @@ export default {
 
   computed: {
     skywalkerBoxWidth () {
-      return this.listData.length * 300
+      return this.listData.length * 310
     }
   },
 
@@ -100,6 +100,8 @@ export default {
           this.itemActive(moveItem)
         } else if (e.keyCode === 73 && e.metaKey && e.altKey) {
           console.log('devtool')
+          // 生产环境下 禁止打开控制台
+          // e.preventDefault()
         }
       })
     },
@@ -162,19 +164,22 @@ export default {
       .item {
         width: 300px;
         height: 360px;
-        // margin: 40px 10px 0;
-        margin-top: 30px;
+        margin: 40px 10px 0;
+        // margin-top: 30px;
         padding: 20px 14px 6px;
         border-radius: 10px;
         box-sizing: border-box;
         box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
-        background-color: #fff;
-        transition: transform .3s, color .4s;
+        background-color: #f5f5f5;
+        transition: transform .3s, color .4s, border .6s, background-color .6s;
         color: #999;
 
         &.item-acitve {
           transform: scale(1.04, 1.04);
           color: #2c3e50;
+          // border: 2px solid rgb(44, 62, 80);
+          // background-color: rgba(44, 62, 80, 0.2);
+          background-color: #fff;
         }
 
         &:hover {
