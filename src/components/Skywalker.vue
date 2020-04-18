@@ -7,9 +7,12 @@
         v-for="(item, index) in listData"
         :key="index" >
         <div class="item-container">
-          <span>{{ item }}</span>
+          <span>{{ item.text }}</span>
         </div>
-        <div v-show="index === active" class="item-copy" @click="copy">Copy</div>
+        <div class="item-info">
+          <div v-show="item.date !== ''" class="item-time">{{ itemTime(item.date) }}</div>
+          <div v-show="index === active" class="item-copy" @click="copy">Copy</div>
+        </div>
       </li>
     </ul>
     <ul class="toolbar">
@@ -22,6 +25,7 @@
 <script>
 import BScroll from 'better-scroll'
 import { ipcRenderer } from 'electron'
+import { dateFormatter, periodTime } from '../utils/utils'
 const { clipboard } = require('electron').remote
 
 export default {
@@ -38,6 +42,11 @@ export default {
   computed: {
     skywalkerBoxWidth () {
       return this.listData.length * 310
+    },
+    itemTime () {
+      return time => {
+        return periodTime(dateFormatter('YYYY-MM-DD HH:mm:ss', time))
+      }
     }
   },
 
@@ -51,7 +60,7 @@ export default {
     // 滚动初始化
     betterScrollInit () {
       this.scrollX = new BScroll(this.$refs.wrap, {
-        probeType: 3,
+        probeType: 0,
         scrollX: true,
         scrollY: false,
         tap: true
@@ -123,7 +132,7 @@ export default {
       console.log('writeDataAndClose:', data)
 
       // 写入剪贴板
-      clipboard.writeText(data)
+      clipboard.writeText(data.text)
 
       // 主进程关闭窗口
       ipcRenderer.send('close-window', 1)
@@ -165,7 +174,6 @@ export default {
         width: 300px;
         height: 360px;
         margin: 40px 10px 0;
-        // margin-top: 30px;
         padding: 20px 14px 6px;
         border-radius: 10px;
         box-sizing: border-box;
@@ -210,26 +218,39 @@ export default {
           }
         }
 
-        .item-copy {
-          width: 50px;
+        .item-info {
+          width: 100%;
           height: 30px;
-          line-height: 30px;
+          display: flex;
+          justify-content: space-between;
           margin-top: 5px;
-          font-size: 12px;
-          border-radius: 6px;
-          cursor: pointer;
-          text-align: center;
-          background-color: #fff;
-          box-shadow: 0px 1px 4px 0px rgba(137, 159, 185, .5);
 
-          &:active {
-            box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .5)
+          .item-time {
+            line-height: 30px;
+            font-size: 14px;
           }
 
-          &:hover {
-            animation: hover-back .3s;
+          .item-copy {
+            width: 50px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0px 1px 4px 0px rgba(137, 159, 185, .5);
+
+            &:active {
+              box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .5)
+            }
+
+            &:hover {
+              animation: hover-back .3s;
+            }
           }
         }
+
       }
     }
 

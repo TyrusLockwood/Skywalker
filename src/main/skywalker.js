@@ -13,13 +13,34 @@ const limit = 20
 
 // 默认文本
 const defaultArr = [
-  '欢迎使用 Skywalker !',
-  '你可以尝试多次复制文本',
-  '然后通过快捷键调起面板',
-  '查找你刚刚复制过的文本',
-  'Enter或者点击左下角的copy',
-  '遇到问题请与我联系',
-  'tyrusl@163.com'
+  {
+    text: '欢迎使用 Skywalker !',
+    date: ''
+  },
+  {
+    text: '你可以尝试多次复制文本',
+    date: ''
+  },
+  {
+    text: '然后通过Cmd+Shift+V调起面板',
+    date: ''
+  },
+  {
+    text: '查找你刚刚复制过的文本',
+    date: ''
+  },
+  {
+    text: 'Enter或者点击左下角的copy',
+    date: ''
+  },
+  {
+    text: '遇到问题请与我联系',
+    date: ''
+  },
+  {
+    text: 'tyrusl@163.com',
+    date: ''
+  }
 ]
 
 // 去除所有空格
@@ -41,7 +62,10 @@ function watcher (win) {
         skywalkerArr = data.skywalkerArr ? data.skywalkerArr : defaultArr
 
         // 存入新值
-        skywalkerArr.unshift(currentValue)
+        skywalkerArr.unshift({
+          text: currentValue,
+          date: Date.now()
+        })
 
         // 存储数量限制 清除多余数据
         if (skywalkerArr.length > limit) {
