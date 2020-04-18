@@ -1,5 +1,6 @@
 import { clipboard, globalShortcut, ipcMain } from 'electron'
 const os = require('os')
+const fs = require('fs')
 const storage = require('electron-json-storage')
 
 // 设置存储路径
@@ -23,7 +24,7 @@ const defaultArr = [
 ]
 
 // 去除所有空格
-const trimAll = _s => _s.replace(/\s/g, '')
+// const trimAll = _s => _s.replace(/\s/g, '')
 
 function isImg () {
   // [ 'text/plain', 'image/png' ]
@@ -33,25 +34,35 @@ function isImg () {
 }
 
 // 观察剪贴板内容变化
-function watcher (win) {
+function watcher (win, app) {
   let currentValue = null
-  // if (isImg()) {
-  //   currentValue = clipboard.readImage().toDataURL()
-  // } else {
-  //   currentValue = clipboard.readText()
-  // }
-  currentValue = clipboard.readText()
+  if (isImg()) {
+    const nativeImage = clipboard.readImage()
+    currentValue = nativeImage.toJPEG(30)
+    console.log('toJPEG:', currentValue)
+  } else {
+    currentValue = clipboard.readText()
+  }
+  // currentValue = clipboard.readText()
+
+  const hostPath = `${app.getPath('userData')}/tempImg`
 
   setInterval(async () => {
     let newValue = null
-    if (isImg()) {
-      newValue = clipboard.readImage().toDataURL()
-      console.log('size:', clipboard.readImage().getSize())
-    } else {
-      newValue = clipboard.readText()
-    }
-    if (currentValue !== newValue && trimAll(newValue)) {
-      currentValue = newValue
+
+    newValue = isImg() ? clipboard.readImage() : clipboard.readText()
+
+    if (currentValue !== newValue) {
+    // if (currentValue !== newValue && trimAll(newValue)) {
+      if (isImg()) {
+        if (!fs.existsSync(hostPath)) {
+          fs.mkdirSync(hostPath)
+        }
+        fs.writeFileSync(`${hostPath}/image${Date.now()}.jpeg`, currentValue)
+      } else {
+        console.log('text:', currentValue)
+        currentValue = newValue
+      }
 
       // 先从storage中取出原有数据
       storage.get('skywalker', (err, data) => {
@@ -143,7 +154,7 @@ function windowConfig (win, app) {
 }
 
 export function skywalker (win, app) {
-  watcher(win)
+  watcher(win, app)
   listener(win)
   hotKey(win)
   windowConfig(win, app)
