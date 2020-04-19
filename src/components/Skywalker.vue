@@ -37,15 +37,12 @@ export default {
       active: 0,
       listData: [],
       scrollX: null,
-      isShowTips: false
+      isShowTips: false,
+      listItem: null
     }
   },
 
   computed: {
-    // 获取所有item
-    listItem () {
-      return document.querySelectorAll('.list-item')
-    },
     // 滚动区域宽度
     listWidth () {
       return this.listData.length * 310
@@ -74,6 +71,7 @@ export default {
         tap: true
       })
 
+      this.listItem = document.querySelectorAll('.list-item')
       console.log('listItem.length:', this.listItem.length)
     },
 
@@ -160,6 +158,8 @@ export default {
 
       // 重新获取所有item
       this.$nextTick(() => {
+        this.listItem = document.querySelectorAll('.list-item')
+
         this.scrollX.scrollToElement(this.listItem[0], 300, true, false)
 
         // 选中第一项
