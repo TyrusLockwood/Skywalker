@@ -1,11 +1,11 @@
 <template>
   <div class="container" ref="wrap">
-    <ul class="skywalkerBox" :style="`width: ${skywalkerBoxWidth}px`">
-      <li class="item"
+    <ul class="list" :style="`width: ${listWidth}px`">
+      <li class="list-item"
         @click="itemActive(index)"
         :class="index === active ? 'item-acitve' : ''"
         v-for="(item, index) in listData"
-        :key="index" >
+        :key="index">
         <div class="item-container">
           <span>{{ item.text }}</span>
         </div>
@@ -19,6 +19,7 @@
       <li @click="itemActive(0)">Back</li>
       <li class="clear" @click="clear">Clear</li>
     </ul>
+    <div class="tips" v-show="isShowTips">复制完成</div>
   </div>
 </template>
 
@@ -35,14 +36,21 @@ export default {
     return {
       active: 0,
       listData: [],
-      scrollX: null
+      scrollX: null,
+      isShowTips: false
     }
   },
 
   computed: {
-    skywalkerBoxWidth () {
+    // 获取所有item
+    listItem () {
+      return document.querySelectorAll('.list-item')
+    },
+    // 滚动区域宽度
+    listWidth () {
       return this.listData.length * 310
     },
+    // 时间间隔
     itemTime () {
       return time => {
         return periodTime(dateFormatter('YYYY-MM-DD HH:mm:ss', time))
@@ -66,18 +74,16 @@ export default {
         tap: true
       })
 
-      // 获取所有item
-      this.listItem = document.querySelectorAll('.item')
       console.log('listItem.length:', this.listItem.length)
     },
 
     // 监听主/渲染进程交互
     onIpcListen () {
-      ipcRenderer.on('skywalker', (event, message) => {
+      ipcRenderer.on('clip', (event, message) => {
         console.log('msg:', message)
 
         // 更新数据
-        this.listData = message.skywalkerArr
+        this.listData = message.clipArr
         console.log('this.listData:', this.listData)
 
         // 数据渲染完成后 初始化滚动
@@ -95,7 +101,7 @@ export default {
     // 监听copy/enter/esc/left/right事件
     onCopyListen (d) {
       d.addEventListener('keydown', e => {
-        if ((e.keyCode === 67 && e.metaKey) || e.keyCode === 13) {
+        if ((e.keyCode === 67 && e.metaKey) || e.keyCode === 13 || e.keyCode === 32) {
           this.writeDataAndClose(this.listData[this.active])
         } else if (e.keyCode === 27) {
           ipcRenderer.send('close-window', 1)
@@ -124,6 +130,7 @@ export default {
     itemActive (idx) {
       // 选中项滚动到屏幕中间
       this.scrollX.scrollToElement(this.listItem[idx], 300, true, false)
+
       this.active = idx
     },
 
@@ -134,8 +141,16 @@ export default {
       // 写入剪贴板
       clipboard.writeText(data.text)
 
-      // 主进程关闭窗口
-      ipcRenderer.send('close-window', 1)
+      this.isShowTips = true
+
+      setTimeout(() => {
+        if (this.isShowTips) {
+          // 主进程关闭窗口
+          ipcRenderer.send('close-window', 1)
+        }
+        // 提示框显示200毫秒即可
+        this.isShowTips = false
+      }, 200)
     },
 
     // 清除数据
@@ -145,7 +160,6 @@ export default {
 
       // 重新获取所有item
       this.$nextTick(() => {
-        this.listItem = document.querySelectorAll('.item')
         this.scrollX.scrollToElement(this.listItem[0], 300, true, false)
 
         // 选中第一项
@@ -162,7 +176,7 @@ export default {
     height: 100vh;
     overflow: hidden;
 
-    .skywalkerBox {
+    .list {
       width: 10000px;
       height: 100%;
       padding: 0 20px;
@@ -170,7 +184,7 @@ export default {
       display: flex;
       align-items: center;
 
-      .item {
+      .list-item {
         width: 300px;
         height: 360px;
         margin: 40px 10px 0;
@@ -307,6 +321,17 @@ export default {
           }
         }
       }
+    }
+
+    .tips {
+      position: fixed;
+      top: 20px;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: 100px;
+      line-height: 30px;
+      font-size: 20px;
     }
   }
 </style>

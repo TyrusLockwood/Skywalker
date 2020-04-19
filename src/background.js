@@ -3,7 +3,7 @@
 import { app, protocol, BrowserWindow, Tray, Menu, screen } from 'electron'
 
 // 剪贴板功能
-import { skywalker } from './main/skywalker'
+import { clip } from './main/clip'
 
 import {
   createProtocol
@@ -62,8 +62,8 @@ function createWindow () {
     win = null
   })
 
-  // 执行 skywalker
-  skywalker(win, app)
+  // 执行 clip
+  clip(win, app)
 }
 
 // Quit when all windows are closed.

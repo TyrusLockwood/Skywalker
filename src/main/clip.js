@@ -6,7 +6,7 @@ const storage = require('electron-json-storage')
 storage.setDataPath(os.tmpdir())
 
 // 设置存储数组
-let skywalkerArr = []
+let clipArr = []
 
 // 存储的数量限制 超出删除
 const limit = 20
@@ -30,7 +30,7 @@ const defaultArr = [
     date: ''
   },
   {
-    text: 'Enter或者点击左下角的copy',
+    text: 'Enter/Space或点击左下角的Copy',
     date: ''
   },
   {
@@ -56,30 +56,30 @@ function watcher (win) {
       currentValue = newValue
 
       // 先从storage中取出原有数据
-      storage.get('skywalker', (err, data) => {
+      storage.get('clip', (err, data) => {
         if (err) throw err
         console.log('storage:', data)
-        skywalkerArr = data.skywalkerArr ? data.skywalkerArr : defaultArr
+        clipArr = data.clipArr ? data.clipArr : defaultArr
 
         // 存入新值
-        skywalkerArr.unshift({
+        clipArr.unshift({
           text: currentValue,
           date: Date.now()
         })
 
         // 存储数量限制 清除多余数据
-        if (skywalkerArr.length > limit) {
-          skywalkerArr.pop()
+        if (clipArr.length > limit) {
+          clipArr.pop()
         }
 
         // 存入带有新值的数组到storage中
-        storage.set('skywalker', {
-          skywalkerArr: skywalkerArr
+        storage.set('clip', {
+          clipArr: clipArr
         }, err => {
           if (err) throw err
 
           // 发送数据到渲染进程
-          win.webContents.send('skywalker', data)
+          win.webContents.send('clip', data)
         })
       })
     }
@@ -89,34 +89,34 @@ function watcher (win) {
 // 监听事件
 function listener (win) {
   // 监听清除storage事件
-  ipcMain.on('clear-data', function (event, arg) {
-    // 这里只是清空storage中的skywalker 不要清空storage所有的数据
-    storage.set('skywalker', {
-      skywalkerArr: defaultArr
+  ipcMain.on('clear-data', (event, arg) => {
+    // 这里只是清空storage中的clip 不要清空storage所有的数据
+    storage.set('clip', {
+      clipArr: defaultArr
     }, err => {
       if (err) throw err
       console.log('clear successed')
 
       // 发送默认数据 到渲染进程
-      win.webContents.send('skywalker', { skywalkerArr: defaultArr })
+      win.webContents.send('clip', { clipArr: defaultArr })
     })
   })
 
   // 监听copy事件
-  ipcMain.on('close-window', function (event, arg) {
+  ipcMain.on('close-window', (event, arg) => {
     win.hide()
   })
 
   // 加载完成后把storage传给渲染进程
   win.webContents.on('did-finish-load', () => {
-    storage.get('skywalker', (err, data) => {
+    storage.get('clip', (err, data) => {
       if (err) throw err
 
-      const origin = data.skywalkerArr && data.skywalkerArr.length > 0 ? data.skywalkerArr : defaultArr
+      const origin = data.clipArr && data.clipArr.length > 0 ? data.clipArr : defaultArr
       console.log('origin:', origin)
 
       // 发送数据到渲染进程
-      win.webContents.send('skywalker', { skywalkerArr: origin })
+      win.webContents.send('clip', { clipArr: origin })
     })
   })
 
@@ -147,7 +147,7 @@ function windowConfig (win, app) {
   })
 }
 
-export function skywalker (win, app) {
+export function clip (win, app) {
   watcher(win)
   listener(win)
   hotKey(win)
