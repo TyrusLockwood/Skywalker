@@ -62,10 +62,10 @@ function watcher (win) {
         clipArr = data.clipArr ? data.clipArr : defaultArr
 
         // 去重原始值
-        const uniIndex = data.clipArr.findIndex(i => i.text === currentValue)
+        const uniIndex = clipArr.findIndex(i => i.text === currentValue)
         // console.log('------', uniIndex)
         if (uniIndex > -1) {
-          data.clipArr.splice(uniIndex, 1)
+          clipArr.splice(uniIndex, 1)
         }
 
         // 存入新值
