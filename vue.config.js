@@ -20,7 +20,10 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        productName: 'Skywalker'
+        productName: 'Skywalker',
+        mac: {
+          icon: './public/icon_512x512@3x.png'
+        }
         // directories: {
         //   buildResources: 'src/assets',
         //   output: 'dist_electron'

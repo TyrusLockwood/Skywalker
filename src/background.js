@@ -106,7 +106,7 @@ app.on('ready', async () => {
   createWindow()
 
   // 系统托盘
-  tray = new Tray(path.resolve(__dirname, './iconTemplate@2x.png'))
+  tray = new Tray(path.resolve(__dirname, './icon_48x48@3x.png'))
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '显示面板',
