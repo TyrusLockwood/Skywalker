@@ -186,7 +186,7 @@ export default {
 
       .list-item {
         width: 300px;
-        height: 360px;
+        height: 320px;
         margin: 40px 10px 0;
         padding: 20px 14px 6px;
         border-radius: 10px;
