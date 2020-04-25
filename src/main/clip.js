@@ -58,7 +58,7 @@ function watcher (win) {
       // 先从storage中取出原有数据
       storage.get('clip', (err, data) => {
         if (err) throw err
-        console.log('storage:', data)
+        // console.log('storage:', data)
         clipArr = data.clipArr ? data.clipArr : defaultArr
 
         // 去重原始值
@@ -120,7 +120,7 @@ function listener (win) {
       if (err) throw err
 
       const origin = data.clipArr && data.clipArr.length > 0 ? data.clipArr : defaultArr
-      console.log('origin:', origin)
+      // console.log('origin:', origin)
 
       // 发送数据到渲染进程
       win.webContents.send('clip', { clipArr: origin })
@@ -150,7 +150,7 @@ function windowConfig (win, app) {
 
   // 失去焦点时隐藏窗口
   win.on('blur', () => {
-    app.hide()
+    win.hide()
   })
 }
 

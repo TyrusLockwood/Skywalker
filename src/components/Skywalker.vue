@@ -191,6 +191,7 @@ export default {
         padding: 20px 14px 6px;
         border-radius: 10px;
         box-sizing: border-box;
+        text-align: center;
         box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
         background-color: #f5f5f5;
         transition: transform .3s, color .4s, border .6s, background-color .6s;

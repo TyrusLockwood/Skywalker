@@ -5,6 +5,8 @@ import { app, protocol, BrowserWindow, Tray, Menu, screen } from 'electron'
 // 剪贴板功能
 import { clip } from './main/clip'
 
+// 添加新窗口功能
+import addWindow from './main/add'
 import {
   createProtocol
   /* installVueDevtools */
@@ -50,12 +52,12 @@ function createWindow () {
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'clip')
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    win.loadURL('app://./clip.html')
   }
 
   win.on('closed', () => {
@@ -111,6 +113,14 @@ app.on('ready', async () => {
       click: () => {
         win.show()
         win.focus()
+      }
+    },
+    {
+      label: '添加面板',
+      click: () => {
+        const addWin = addWindow()
+        addWin.show()
+        addWin.focus()
       }
     },
     {
