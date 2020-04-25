@@ -11,13 +11,13 @@
         </div>
         <div class="item-info">
           <div v-show="item.date !== ''" class="item-time">{{ itemTime(item.date) }}</div>
-          <div v-show="index === active" class="item-copy" @click="copy">Copy</div>
+          <div v-show="index === active" class="item-copy" @click="copy">复制</div>
         </div>
       </li>
     </ul>
     <ul class="toolbar">
-      <li @click="itemActive(0)">Back</li>
-      <li class="clear" @click="clear">Clear</li>
+      <li @click="itemActive(0)">返回起始</li>
+      <li class="clear" @click="clear">清空</li>
     </ul>
     <div class="tips" v-show="isShowTips">复制完成</div>
   </div>
@@ -236,18 +236,23 @@ export default {
         .item-info {
           width: 100%;
           height: 30px;
-          display: flex;
-          justify-content: space-between;
+          position: relative;
           margin-top: 5px;
 
           .item-time {
             line-height: 30px;
             font-size: 14px;
+            position: absolute;
+            top: 0;
+            left: 0;
           }
 
           .item-copy {
             width: 50px;
             height: 30px;
+            position: absolute;
+            top: 0;
+            right: 0;
             line-height: 30px;
             font-size: 12px;
             border-radius: 6px;
