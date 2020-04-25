@@ -45,7 +45,7 @@ export default {
   computed: {
     // 滚动区域宽度
     listWidth () {
-      return this.listData.length * 310
+      return this.listData.length * 270
     },
     // 时间间隔
     itemTime () {
@@ -185,8 +185,8 @@ export default {
       align-items: center;
 
       .list-item {
-        width: 300px;
-        height: 320px;
+        width: 260px;
+        height: 300px;
         margin: 40px 10px 0;
         padding: 20px 14px 6px;
         border-radius: 10px;
