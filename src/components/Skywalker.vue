@@ -16,7 +16,7 @@
       </li>
     </ul>
     <ul class="toolbar">
-      <li @click="itemActive(0)">返回起始</li>
+      <li class="back" @click="itemActive(0)">返回起始</li>
       <li class="clear" @click="clear">清空</li>
     </ul>
     <div class="tips" v-show="isShowTips">复制完成</div>
@@ -193,7 +193,7 @@ export default {
         box-sizing: border-box;
         text-align: center;
         box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
-        background-color: #f5f5f5;
+        background-color: #f9f9f9;
         transition: transform .3s, color .4s, border .6s, background-color .6s;
         color: #999;
 
@@ -203,6 +203,8 @@ export default {
           // border: 2px solid rgb(44, 62, 80);
           // background-color: rgba(44, 62, 80, 0.2);
           background-color: #fff;
+
+          box-shadow: 0px 2px 40px 0px rgba(137, 159, 185, .6);
         }
 
         &:hover {
@@ -283,11 +285,23 @@ export default {
       align-items: center;
       justify-content: flex-end;
 
-      .clear {
-        color: deeppink;
+      .back {
+        color: #fff;
+        background-color: #1acaff;
+        box-shadow: 0px 1px 10px 0px rgba(26, 202, 255, .8);
 
         &:hover {
-          color: deeppink;
+          color: #fff;
+        }
+      }
+
+      .clear {
+        color: #fff;
+        background-color: #ff7bb0;
+        box-shadow: 0px 1px 10px 0px rgba(255, 123, 176, .8);
+
+        &:hover {
+          color: #fff;
         }
       }
 
