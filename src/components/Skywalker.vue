@@ -11,21 +11,36 @@
         </div>
         <div class="item-info">
           <div v-show="item.date !== ''" class="item-time">{{ itemTime(item.date) }}</div>
-          <div v-show="index === active" class="item-copy" @click="copy">复制</div>
+          <div v-show="index === active" class="item-copy" @click="copy">
+            <img height="16" width="16" src="@/assets/icon/file-copy-line.svg" />
+          </div>
         </div>
       </li>
     </ul>
     <ul class="toolbar">
-      <li class="back" @click="itemActive(0)">返回起始</li>
-      <li class="clear" @click="clear">清空</li>
+      <!-- <li class="code" @click="gotoCode">
+        <img height="18" width="18" src="@/assets/icon/github-fill.svg" />
+      </li> -->
+      <li class="help">
+        <img height="18" width="18" src="@/assets/icon/alarm-warning-line.svg" />
+      </li>
+      <li class="back" @click="itemActive(0)">
+        <img height="18" width="18" src="@/assets/icon/arrow-go-back-line.svg" />
+      </li>
+      <li class="clear" @click="clear">
+        <img height="18" width="18" src="@/assets/icon/delete-bin-line.svg" />
+      </li>
     </ul>
-    <div class="tips" v-show="isShowTips">复制完成</div>
+    <div class="tips" v-show="isShowTips">
+      <img height="28" width="28" src="@/assets/icon/check-line.svg" />
+      复制完成
+    </div>
   </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, shell } from 'electron'
 import { dateFormatter, periodTime } from '../utils/utils'
 const { clipboard } = require('electron').remote
 
@@ -47,6 +62,7 @@ export default {
     listWidth () {
       return this.listData.length * 270
     },
+
     // 时间间隔
     itemTime () {
       return time => {
@@ -165,6 +181,11 @@ export default {
         // 选中第一项
         this.active = 0
       })
+    },
+
+    // 查看代码
+    gotoCode () {
+      shell.openExternal('https://')
     }
   }
 }
@@ -194,7 +215,7 @@ export default {
         text-align: center;
         box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
         background-color: #f9f9f9;
-        transition: transform .3s, color .4s, border .6s, background-color .6s;
+        transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
         color: #999;
 
         &.item-acitve {
@@ -204,7 +225,7 @@ export default {
           // background-color: rgba(44, 62, 80, 0.2);
           background-color: #fff;
 
-          box-shadow: 0px 2px 40px 0px rgba(137, 159, 185, .6);
+          box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .5);
         }
 
         &:hover {
@@ -250,9 +271,13 @@ export default {
           }
 
           .item-copy {
-            width: 50px;
-            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            // width: 50px;
+            // height: 30px;
             position: absolute;
+            padding: 6px;
             top: 0;
             right: 0;
             line-height: 30px;
@@ -286,29 +311,32 @@ export default {
       justify-content: flex-end;
 
       .back {
-        color: #fff;
         background-color: #1acaff;
         box-shadow: 0px 1px 10px 0px rgba(26, 202, 255, .8);
-
-        &:hover {
-          color: #fff;
-        }
       }
 
       .clear {
-        color: #fff;
         background-color: #ff7bb0;
         box-shadow: 0px 1px 10px 0px rgba(255, 123, 176, .8);
+      }
 
-        &:hover {
-          color: #fff;
-        }
+      .code {
+        background-color: #2c3e50;
+        box-shadow: 0px 1px 10px 0px rgba(44, 62, 80, .6);
+      }
+
+      .help {
+        background-color: #26ef5c;
+        box-shadow: 0px 1px 10px 0px rgba(38, 239, 92, .8);
       }
 
       li {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
         font-size: 12px;
         margin-left: 15px;
-        padding: 4px 10px;
+        padding: 6px;
         border-radius: 6px;
         background-color: #fff;
         text-align: center;
@@ -349,9 +377,12 @@ export default {
       left: 0;
       right: 0;
       margin: auto;
-      width: 100px;
+      width: 120px;
       line-height: 30px;
       font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
     }
   }
 </style>
