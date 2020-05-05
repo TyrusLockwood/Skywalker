@@ -18,11 +18,11 @@
       </li>
     </ul>
     <ul class="toolbar">
-      <!-- <li class="code" @click="gotoCode">
-        <img height="18" width="18" src="@/assets/icon/github-fill.svg" />
-      </li> -->
       <li class="help">
         <img height="18" width="18" src="@/assets/icon/alarm-warning-line.svg" />
+      </li>
+      <li class="code" @click="gotoCode">
+        <img height="18" width="18" src="@/assets/icon/github-fill.svg" />
       </li>
       <li class="back" @click="itemActive(0)">
         <img height="18" width="18" src="@/assets/icon/arrow-go-back-line.svg" />
@@ -185,7 +185,7 @@ export default {
 
     // 查看代码
     gotoCode () {
-      shell.openExternal('https://')
+      shell.openExternal('https://github.com/Tyrus1113')
     }
   }
 }
