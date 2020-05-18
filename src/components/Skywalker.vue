@@ -60,7 +60,7 @@ export default {
   computed: {
     // 滚动区域宽度
     listWidth () {
-      return this.listData.length * 270
+      return this.listData.length * 212
     },
 
     // 时间间隔
@@ -206,10 +206,12 @@ export default {
       align-items: center;
 
       .list-item {
-        width: 260px;
-        height: 300px;
+        width: 200px;
+        height: 220px;
+        // width: 260px;
+        // height: 300px;
         margin: 40px 10px 0;
-        padding: 20px 14px 6px;
+        padding: 12px 12px 6px;
         border-radius: 10px;
         box-sizing: border-box;
         text-align: center;
@@ -217,6 +219,7 @@ export default {
         background-color: #f9f9f9;
         transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
         color: #999;
+        font-size: 14px;
 
         &.item-acitve {
           transform: scale(1.04, 1.04);
@@ -264,7 +267,7 @@ export default {
 
           .item-time {
             line-height: 30px;
-            font-size: 14px;
+            font-size: 12px;
             position: absolute;
             top: 0;
             left: 0;
