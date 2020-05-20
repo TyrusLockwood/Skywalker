@@ -9,7 +9,7 @@ storage.setDataPath(os.tmpdir())
 let clipArr = []
 
 // 存储的数量限制 超出删除
-const limit = 20
+const limit = 30
 
 // 默认文本
 const defaultArr = [
@@ -30,7 +30,7 @@ const defaultArr = [
     date: ''
   },
   {
-    text: 'Enter/Space或点击左下角的Copy',
+    text: 'Enter/Space或点击左下角的icon获取内容到系统剪贴板',
     date: ''
   },
   {
@@ -59,7 +59,7 @@ function watcher (win) {
       storage.get('clip', (err, data) => {
         if (err) throw err
         // console.log('storage:', data)
-        clipArr = data.clipArr ? data.clipArr : defaultArr
+        clipArr = data && data.clipArr ? data.clipArr : defaultArr
 
         // 去重原始值
         const uniIndex = clipArr.findIndex(i => i.text === currentValue)

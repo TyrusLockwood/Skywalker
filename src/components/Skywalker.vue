@@ -18,12 +18,12 @@
       </li>
     </ul>
     <ul class="toolbar">
-      <li class="help">
+      <!-- <li class="help">
         <img src="@/assets/icon/alarm-warning-line.svg" />
       </li>
       <li class="code" @click="gotoCode">
         <img src="@/assets/icon/github-fill.svg" />
-      </li>
+      </li> -->
       <li class="back" @click="itemActive(0)">
         <img src="@/assets/icon/arrow-go-back-line.svg" />
       </li>
