@@ -19,20 +19,20 @@
     </ul>
     <ul class="toolbar">
       <li class="help">
-        <img height="18" width="18" src="@/assets/icon/alarm-warning-line.svg" />
+        <img src="@/assets/icon/alarm-warning-line.svg" />
       </li>
       <li class="code" @click="gotoCode">
-        <img height="18" width="18" src="@/assets/icon/github-fill.svg" />
+        <img src="@/assets/icon/github-fill.svg" />
       </li>
       <li class="back" @click="itemActive(0)">
-        <img height="18" width="18" src="@/assets/icon/arrow-go-back-line.svg" />
+        <img src="@/assets/icon/arrow-go-back-line.svg" />
       </li>
       <li class="clear" @click="clear">
-        <img height="18" width="18" src="@/assets/icon/delete-bin-line.svg" />
+        <img src="@/assets/icon/delete-bin-line.svg" />
       </li>
     </ul>
     <div class="tips" v-show="isShowTips">
-      <img height="28" width="28" src="@/assets/icon/check-line.svg" />
+      <img src="@/assets/icon/check-line.svg" />
       复制完成
     </div>
   </div>
@@ -306,12 +306,17 @@ export default {
 
     .toolbar {
       position: fixed;
-      top: 20px;
+      top: 16px;
       right: 20px;
       height: 30px;
       display: flex;
       align-items: center;
       justify-content: flex-end;
+
+      img {
+        width: 14px;
+        height: 14px;
+      }
 
       .back {
         background-color: #1acaff;
@@ -376,16 +381,21 @@ export default {
 
     .tips {
       position: fixed;
-      top: 20px;
+      top: 16px;
       left: 0;
       right: 0;
       margin: auto;
-      width: 120px;
+      width: 100px;
       line-height: 30px;
-      font-size: 20px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: space-around;
+
+      img {
+        width: 18px;
+        height: 18px;
+      }
     }
   }
 </style>
