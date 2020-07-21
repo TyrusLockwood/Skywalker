@@ -18,12 +18,12 @@
       </li>
     </ul>
     <ul class="toolbar">
-      <!-- <li class="help">
+      <li class="help">
         <img src="@/assets/icon/alarm-warning-line.svg" />
       </li>
       <li class="code" @click="gotoCode">
         <img src="@/assets/icon/github-fill.svg" />
-      </li> -->
+      </li>
       <li class="back" @click="itemActive(0)">
         <img src="@/assets/icon/arrow-go-back-line.svg" />
       </li>
@@ -60,7 +60,7 @@ export default {
   computed: {
     // 滚动区域宽度
     listWidth () {
-      return this.listData.length * 212
+      return this.listData.length * (160 + 16)
     },
 
     // 时间间隔
@@ -130,7 +130,7 @@ export default {
         } else if (e.keyCode === 73 && e.metaKey && e.altKey) {
           console.log('devtool')
           // 生产环境下 禁止打开控制台
-          // e.preventDefault()
+          e.preventDefault()
         }
       })
     },
@@ -185,7 +185,7 @@ export default {
 
     // 查看代码
     gotoCode () {
-      shell.openExternal('https://github.com/Tyrus1113')
+      shell.openExternal('https://github.com/Tyrus1113/Skywalker')
     }
   }
 }
@@ -206,12 +206,11 @@ export default {
       align-items: center;
 
       .list-item {
-        width: 200px;
-        height: 220px;
-        // width: 260px;
-        // height: 300px;
-        margin: 40px 10px 0;
+        width: 160px;
+        height: 180px;
+        margin: 36px 8px 0;
         padding: 12px 12px 6px;
+        font-size: 12px;
         border-radius: 10px;
         box-sizing: border-box;
         text-align: center;
@@ -219,7 +218,6 @@ export default {
         background-color: #f9f9f9;
         transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
         color: #999;
-        font-size: 14px;
 
         &.item-acitve {
           transform: scale(1.04, 1.04);
@@ -306,7 +304,7 @@ export default {
 
     .toolbar {
       position: fixed;
-      top: 16px;
+      top: 10px;
       right: 20px;
       height: 30px;
       display: flex;
@@ -381,7 +379,7 @@ export default {
 
     .tips {
       position: fixed;
-      top: 16px;
+      top: 10px;
       left: 0;
       right: 0;
       margin: auto;

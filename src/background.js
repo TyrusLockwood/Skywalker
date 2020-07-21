@@ -28,11 +28,14 @@ function createWindow () {
   // 获取主窗口尺寸
   const size = screen.getPrimaryDisplay().size
 
+  // 设置系统菜单 隐藏
+  Menu.setApplicationMenu(Menu.buildFromTemplate([]))
+
   // Create the browser window.
   win = new BrowserWindow({
     width: size.width,
     // width: 1875,
-    height: 300,
+    height: 240,
     webPreferences: {
       nodeIntegration: true
     },
