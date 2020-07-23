@@ -2,7 +2,6 @@
 node_modules
 /dist
 package-lock.json
-babel.config.js
 yarn.lock
 
 # local env files
