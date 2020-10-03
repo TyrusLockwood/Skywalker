@@ -41,7 +41,7 @@
 <script>
 import BScroll from 'better-scroll'
 import { ipcRenderer, shell } from 'electron'
-import { dateFormatter, periodTime } from '../utils/utils'
+import { dateFormatter, periodTime } from '@/./utils/utils'
 const { clipboard } = require('electron').remote
 
 export default {

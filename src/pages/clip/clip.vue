@@ -6,7 +6,7 @@
 
 <script>
 // @ is an alias to /src
-import Skywalker from '@/components/Skywalker.vue'
+import Skywalker from './components/Skywalker'
 
 export default {
   name: 'Home',
