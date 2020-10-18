@@ -17,6 +17,10 @@ const pages = getEntry('./src/pages/**?/*.html')
 
 module.exports = {
   pages,
+  devServer: {
+
+  },
+  productionSourceMap: false,
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
@@ -24,19 +28,6 @@ module.exports = {
         mac: {
           icon: './public/icon_512x512@3x.png'
         }
-        // directories: {
-        //   buildResources: 'src/assets',
-        //   output: 'dist_electron'
-        // },
-        // extraResources: [
-        //   'src/assets/'
-        // ]
-        // extraResources: [
-        //   {
-        //     from: 'src/assets/',
-        //     to: 'icons/'
-        //   }
-        // ]
       }
     }
   }
