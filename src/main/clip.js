@@ -58,7 +58,7 @@ function watcher (win) {
           if (err) throw err
 
           // 发送数据到渲染进程
-          win.webContents.send('clip', data)
+          win.webContents.send('clip', { clipArr })
         })
       })
     }
