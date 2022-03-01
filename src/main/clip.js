@@ -1,10 +1,8 @@
-import { clipboard, globalShortcut, ipcMain } from 'electron'
+import { clipboard, ipcMain, globalShortcut } from 'electron'
 import introduce from '../utils/introduce'
-const os = require('os')
-const storage = require('electron-json-storage')
+const Store = require('electron-store')
 
-// 设置存储路径
-storage.setDataPath(os.tmpdir())
+const store = new Store()
 
 // 设置存储数组
 let clipArr = []
@@ -18,67 +16,51 @@ const defaultArr = introduce
 // 去除所有空格
 const trimAll = _s => _s.replace(/\s/g, '')
 
-// 观察剪贴板内容变化
-function watcher (win) {
+// 监听剪贴板内容变化
+const watcher = win => {
   let currentValue = clipboard.readText()
 
-  setInterval(async () => {
+  setInterval(() => {
     const newValue = clipboard.readText()
+
     if (currentValue !== newValue && trimAll(newValue) !== '') {
       currentValue = newValue
 
       // 先从storage中取出原有数据
-      storage.get('clip', (err, data) => {
-        if (err) throw err
-        // console.log('storage:', data)
-        clipArr = data && data.clipArr ? data.clipArr : defaultArr
+      clipArr = store.get('clip', defaultArr)
 
-        // 去重原始值
-        const uniIndex = clipArr.findIndex(i => i.text === currentValue)
-        // console.log('------', uniIndex)
-        if (uniIndex > -1) {
-          clipArr.splice(uniIndex, 1)
-        }
+      // 去重原始值
+      const uniIndex = clipArr.findIndex(i => i.text === currentValue)
+      console.log('------', uniIndex)
+      if (uniIndex > -1) {
+        clipArr.splice(uniIndex, 1)
+      }
 
-        // 存入新值
-        clipArr.unshift({
-          text: currentValue,
-          date: Date.now()
-        })
-
-        // 存储数量限制 清除多余数据
-        if (clipArr.length > limit) {
-          clipArr.pop()
-        }
-
-        // 存入带有新值的数组到storage中
-        storage.set('clip', {
-          clipArr: clipArr
-        }, err => {
-          if (err) throw err
-
-          // 发送数据到渲染进程
-          win.webContents.send('clip', { clipArr })
-        })
+      // 存入新值
+      clipArr.unshift({
+        text: currentValue,
+        date: Date.now()
       })
+
+      // 存储数量限制 清除多余数据
+      if (clipArr.length > limit) {
+        clipArr.pop()
+      }
+
+      store.set('clip', clipArr)
+      win.webContents.send('clip', { clipArr })
     }
-  }, 800)
+  }, 1000)
 }
 
 // 监听事件
-function listener (win) {
+const listener = win => {
   // 监听清除storage事件
   ipcMain.on('clear-data', (event, arg) => {
     // 这里只是清空storage中的clip 不要清空storage所有的数据
-    storage.set('clip', {
-      clipArr: defaultArr
-    }, err => {
-      if (err) throw err
-      console.log('clear successed')
-
-      // 发送默认数据 到渲染进程
-      win.webContents.send('clip', { clipArr: defaultArr })
-    })
+    store.set('clip', defaultArr)
+    // 发送默认数据 到渲染进程
+    win.webContents.send('clip', { clipArr: defaultArr })
   })
 
   // 监听copy事件
@@ -88,15 +70,9 @@ function listener (win) {
 
   // 加载完成后把storage传给渲染进程
   win.webContents.on('did-finish-load', () => {
-    storage.get('clip', (err, data) => {
-      if (err) throw err
-
-      const origin = data.clipArr && data.clipArr.length > 0 ? data.clipArr : defaultArr
-      // console.log('origin:', origin)
-
-      // 发送数据到渲染进程
-      win.webContents.send('clip', { clipArr: origin })
-    })
+    const origin = store.get('clip', defaultArr)
+    // 发送数据到渲染进程
+    win.webContents.send('clip', { clipArr: origin })
   })
 
   // 监听关闭主窗口 不退出应用
@@ -104,21 +80,6 @@ function listener (win) {
     e.preventDefault()
     win.hide()
   })
-}
-
-// 键盘监听
-function hotKey (win) {
-  globalShortcut.register('CommandOrControl+Shift+v', () => {
-    console.log('CommandOrControl+Shift+v is clicked')
-    // if (win.isMinimized()) win.restore()
-    win.show()
-  })
-}
-
-// 窗口设置
-function windowConfig (win, app) {
-  // 默认最大化 可使窗口贴底
-  win.maximize()
 
   // 失去焦点时隐藏窗口
   win.on('blur', () => {
@@ -126,9 +87,17 @@ function windowConfig (win, app) {
   })
 }
 
-export function clip (win, app) {
+// 键盘监听
+const hotKey = win => {
+  globalShortcut.register('CommandOrControl+Shift+v', () => {
+    console.log('CommandOrControl+Shift+v is clicked')
+    // if (win.isMinimized()) win.restore()
+    win.show()
+  })
+}
+
+export const clip = win => {
   watcher(win)
   listener(win)
   hotKey(win)
-  windowConfig(win, app)
 }

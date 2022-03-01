@@ -4,11 +4,15 @@ export default [
     date: ''
   },
   {
-    text: '你可以尝试多次复制文本',
+    text: '你可以尝试多次、在不同的App中复制文本',
     date: ''
   },
   {
-    text: '然后通过Cmd+Shift+V调起面板',
+    text: '然后通过Cmd+Shift+V调起剪贴板的面板',
+    date: ''
+  },
+  {
+    text: '通过快捷键: 向左A/← 向右B/→',
     date: ''
   },
   {
@@ -16,7 +20,11 @@ export default [
     date: ''
   },
   {
-    text: 'Enter/Space或点击左下角的icon获取内容到系统剪贴板',
+    text: 'Enter/Space或点击左下角的Icon获取内容到系统剪贴板',
+    date: ''
+  },
+  {
+    text: '恭喜你 已选择的内容已存储到你的剪贴板中',
     date: ''
   },
   {

@@ -1,47 +1,38 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Tray, Menu, screen } from 'electron'
+import { app, protocol, BrowserWindow, screen, Tray, Menu } from 'electron'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
-// 剪贴板功能
 import { clip } from './main/clip'
-
-// 添加新窗口功能
-import addWindow from './main/add'
-import {
-  createProtocol
-  /* installVueDevtools */
-} from 'vue-cli-plugin-electron-builder/lib'
-
-const path = require('path')
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const path = require('path')
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win = null
-
-let tray = null
+const global = {
+  tray: null,
+  win: null
+}
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'app', privileges: { secure: true, standard: true } }
+])
 
-function createWindow () {
-  // 获取主窗口尺寸
-  const size = screen.getPrimaryDisplay().size
-
-  // 设置系统菜单 隐藏
-  Menu.setApplicationMenu(Menu.buildFromTemplate([
-    {
-      label: 'Skywalker'
-    }
-  ]))
-
+async function createWindow () {
+  const { size, workAreaSize } = screen.getPrimaryDisplay()
+  console.log(workAreaSize.height)
   // Create the browser window.
-  win = new BrowserWindow({
-    width: size.width,
-    // width: 1875,
+  global.win = new BrowserWindow({
+    width: size.width - 50,
     height: 240,
+    x: workAreaSize.width,
+    y: workAreaSize.height,
     webPreferences: {
-      nodeIntegration: true
+
+      // Use pluginOptions.nodeIntegration, leave this alone
+      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
     },
     // 窗口是否总是显示在其他窗口之前
     alwaysOnTop: true,
@@ -59,20 +50,20 @@ function createWindow () {
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'clip')
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    await global.win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    if (!process.env.IS_TEST) global.win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    win.loadURL('app://./clip.html')
+    global.win.loadURL('app://./index.html')
   }
 
-  win.on('closed', () => {
-    win = null
+  global.win.on('closed', () => {
+    global.win = null
   })
 
   // 执行 clip
-  clip(win, app)
+  clip(global.win, app)
 }
 
 // Quit when all windows are closed.
@@ -87,9 +78,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow()
-  }
+  if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
 // This method will be called when Electron has finished
@@ -98,36 +87,22 @@ app.on('activate', () => {
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
-    // Devtools extensions are broken in Electron 6.0.0 and greater
-    // See https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/378 for more info
-    // Electron will not launch with Devtools extensions installed on Windows 10 with dark mode
-    // If you are not using Windows 10 dark mode, you may uncomment these lines
-    // In addition, if the linked issue is closed, you can upgrade electron and uncomment these lines
-    // try {
-    //   await installVueDevtools()
-    // } catch (e) {
-    //   console.error('Vue Devtools failed to install:', e.toString())
-    // }
-
+    try {
+      await installExtension(VUEJS3_DEVTOOLS)
+    } catch (e) {
+      console.error('Vue Devtools failed to install:', e.toString())
+    }
   }
   createWindow()
 
   // 系统托盘
-  tray = new Tray(path.resolve(__dirname, './icon_48x48@3x.png'))
+  global.tray = new Tray(path.resolve(__dirname, './icon_48x48@3x.png'))
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '显示面板',
       click: () => {
-        win.show()
-        win.focus()
-      }
-    },
-    {
-      label: '添加面板',
-      click: () => {
-        const addWin = addWindow()
-        addWin.show()
-        addWin.focus()
+        global.win.show()
+        global.win.focus()
       }
     },
     {
@@ -135,13 +110,13 @@ app.on('ready', async () => {
       click: () => app.exit()
     }
   ])
-  tray.setContextMenu(contextMenu)
+  global.tray.setContextMenu(contextMenu)
 })
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
-    process.on('message', data => {
+    process.on('message', (data) => {
       if (data === 'graceful-exit') {
         app.quit()
       }

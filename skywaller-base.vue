@@ -39,13 +39,13 @@
 </template>
 
 <script>
-import BScroll from 'better-scroll'
+import BScroll from '@better-scroll/core'
 import { ipcRenderer, shell } from 'electron'
-import { dateFormatter, periodTime } from '@/./utils/utils'
-const { clipboard } = require('electron').remote
+import { dateFormatter, periodTime } from '@/utils/utils'
+const { clipboard } = require('electron')
 
 export default {
-  name: 'Skywalker',
+  name: 'sky-walker',
 
   data () {
     return {
@@ -139,10 +139,10 @@ export default {
           this.writeDataAndClose(this.listData[this.active])
         } else if (e.keyCode === 27) {
           ipcRenderer.send('close-window', 1)
-        } else if (e.keyCode === 37) {
+        } else if (e.keyCode === 37 || e.keyCode === 65) {
           const moveItem = this.active !== 0 ? this.active - 1 : 0
           this.itemActive(moveItem)
-        } else if (e.keyCode === 39) {
+        } else if (e.keyCode === 39 || e.keyCode === 68) {
           const moveItem = this.active !== this.listData.length - 1
             ? this.active + 1
             : this.active

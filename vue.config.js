@@ -1,28 +1,14 @@
-const glob = require('glob')
-
-function getEntry (url) {
-  const entrys = {}
-  glob.sync(url).forEach(item => {
-    const urlArr = item.split('/').splice(-3)
-    entrys[urlArr[1]] = {
-      entry: 'src/pages/' + urlArr[1] + '/' + 'index.js',
-      template: 'src/pages/' + urlArr[1] + '/' + 'index.html',
-      filename: urlArr[1] + '.html',
-      title: 'pages-' + urlArr[1]
-    }
-  })
-  return entrys
-}
-const pages = getEntry('./src/pages/**?/*.html')
-
-module.exports = {
-  pages,
-  devServer: {
-
+const { defineConfig } = require('@vue/cli-service')
+module.exports = defineConfig({
+  transpileDependencies: true,
+  chainWebpack: config => {
+    config.resolve.alias
+      .set('path', false)
+      .set('fs', false)
   },
-  productionSourceMap: false,
   pluginOptions: {
     electronBuilder: {
+      nodeIntegration: true,
       builderOptions: {
         productName: 'Skywalker',
         mac: {
@@ -31,4 +17,4 @@ module.exports = {
       }
     }
   }
-}
+})

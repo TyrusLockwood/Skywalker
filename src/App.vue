@@ -1,13 +1,11 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div>
+    <Skywalker />
   </div>
 </template>
 
-<script>
-export default {
-  name: 'About'
-}
+<script setup>
+import Skywalker from '@/pages/Skywalker'
 </script>
 
 <style lang="scss">
@@ -24,6 +22,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-color: #f1f1f1;
 }
 </style>
