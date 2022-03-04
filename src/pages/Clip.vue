@@ -1,36 +1,20 @@
 <template>
   <div class="container" ref="wrap">
     <ul class="list" :style="`width: ${ listWidth }px`">
-      <li class="list-item"
-        @click="itemActive(index)"
-        :class="index === active ? 'item-acitve' : ''"
+      <listItem
+        @itemActive="itemActive(index)"
         v-for="(item, index) in state.listData"
+        :listItem="item"
+        :listIndex="index"
+        :listActive="active"
         :key="index">
-        <div class="item-container">
-          <span>{{ item.text }}</span>
-        </div>
-        <div class="item-info">
-          <div v-show="item.date !== ''" class="item-time">{{ itemTime(item.date) }}</div>
-          <div v-show="index === active" class="item-copy" @click="writeDataAndClose(active)">
-            <img height="16" width="16" src="@/assets/icon/file-copy-line.svg" />
-          </div>
-        </div>
-      </li>
+      </listItem>
     </ul>
-    <ul class="toolbar">
-      <li class="help" @click="emit('changeList')">
-        <img src="@/assets/icon/alarm-warning-line.svg" />
-      </li>
-      <li class="code" @click="gotoCode">
-        <img src="@/assets/icon/github-fill.svg" />
-      </li>
-      <li class="back" @click="itemActive(0)">
-        <img src="@/assets/icon/arrow-go-back-line.svg" />
-      </li>
-      <li class="clear" @click="clear">
-        <img src="@/assets/icon/delete-bin-line.svg" />
-      </li>
-    </ul>
+    <toolbar
+      @itemActive="itemActive(0)"
+      @clear="clear"
+      @gotoCode="gotoCode">
+    </toolbar>
     <div class="tips" v-show="isShowTips">
       <img src="@/assets/icon/check-line.svg" />
       复制完成
@@ -39,46 +23,30 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, nextTick, defineEmits, defineProps } from 'vue'
+import { computed, onMounted, reactive, ref, nextTick } from 'vue'
 import BScroll from '@better-scroll/core'
 import { ipcRenderer, shell } from 'electron'
-import { dateFormatter, periodTime } from '@/utils/utils'
+import listItem from '@/components/listItem.vue'
+import toolbar from '@/components/toolbar.vue'
 const { clipboard } = require('electron')
 
 const active = ref(0)
 const scrollX = ref(null)
 const isShowTips = ref(false)
-const listItem = ref(null)
+const listItemEL = ref(null)
 const wrap = ref(null)
 const state = reactive({
   listData: []
-})
-
-const emit = defineEmits(['changeList'])
-const prop = defineProps({
-  chainCode: {
-    type: Number,
-    default: 1
-  }
 })
 
 const listWidth = computed(() => {
   return state.listData.length * (160 + 16)
 })
 
-const itemTime = computed(() => {
-  return time => {
-    return periodTime(dateFormatter('YYYY-MM-DD HH:mm:ss', time))
-  }
-})
-
 onMounted(() => {
   const doc = document
+  onCopyListen(doc)
   onIpcListen()
-  console.log(prop.chainCode)
-  if (prop.chainCode === 1) {
-    onCopyListen(doc)
-  }
 })
 
 // 滚动初始化
@@ -90,8 +58,8 @@ const betterScrollInit = () => {
     tap: true
   })
 
-  listItem.value = document.querySelectorAll('.list-item')
-  console.log('listItem.length:', listItem.value.length)
+  listItemEL.value = document.querySelectorAll('.list-item')
+  console.log('listItemEL.length:', listItemEL.value.length)
 }
 
 // 监听主/渲染进程交互
@@ -132,7 +100,6 @@ const onCopyListen = d => {
       itemActive(moveItem)
     } else if (e.keyCode === 67) {
       // 切换模式
-      emit('changeList', prop.chainCode)
     } else if (e.keyCode === 73 && e.metaKey && e.altKey) {
       console.log('devtool')
       // 生产环境下 禁止打开控制台
@@ -144,7 +111,7 @@ const onCopyListen = d => {
 // 当前选中项
 const itemActive = idx => {
   // 选中项滚动到屏幕中间
-  scrollX.value.scrollToElement(listItem.value[idx], 300, true, false)
+  scrollX.value.scrollToElement(listItemEL.value[idx], 300, true, false)
   active.value = idx
 }
 
@@ -174,10 +141,8 @@ const clear = () => {
 
   // 重新获取所有item
   nextTick(() => {
-    listItem.value = document.querySelectorAll('.list-item')
-
-    scrollX.value.scrollToElement(listItem.value[0], 300, true, false)
-
+    listItemEL.value = document.querySelectorAll('.list-item')
+    scrollX.value.scrollToElement(listItemEL.value[0], 300, true, false)
     // 选中第一项
     active.value = 0
   })
@@ -209,208 +174,37 @@ const gotoCode = () => {
 </script>
 
 <style lang="scss" scoped>
-  .container {
-    width: 100vw;
-    height: 100vh;
+.container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  .list {
+    width: 10000px;
+    height: 100%;
+    padding: 0 20px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
 
-    .list {
-      width: 10000px;
-      height: 100%;
-      padding: 0 20px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
+  .tips {
+    position: fixed;
+    top: 10px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 100px;
+    line-height: 30px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 
-      .list-item {
-        width: 160px;
-        height: 180px;
-        margin: 36px 8px 0;
-        padding: 12px 12px 6px;
-        font-size: 12px;
-        border-radius: 10px;
-        box-sizing: border-box;
-        text-align: center;
-        box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
-        background-color: #f9f9f9;
-        transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
-        color: #999;
-
-        &.item-acitve {
-          transform: scale(1.04, 1.04);
-          color: #2c3e50;
-          // border: 2px solid rgb(44, 62, 80);
-          // background-color: rgba(44, 62, 80, 0.2);
-          background-color: #fff;
-
-          box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .5);
-        }
-
-        &:hover {
-          color: #2c3e50;
-        }
-
-        .item-container {
-          display: block;
-          width: 100%;
-          height: calc(100% - 35px);
-          overflow-x: hidden;
-          overflow-y: auto;
-
-          span {
-            display: block;
-            overflow: hidden;
-          }
-
-          &::-webkit-scrollbar {
-              /*滚动条整体样式*/
-              width: 1px;
-              background-color: #fff;
-          }
-          &::-webkit-scrollbar-thumb {
-              /*滚动条整体样式*/
-              width: 1px;
-              background: rgba(44, 62, 80, .2);
-          }
-        }
-
-        .item-info {
-          width: 100%;
-          height: 30px;
-          position: relative;
-          margin-top: 5px;
-
-          .item-time {
-            line-height: 30px;
-            font-size: 12px;
-            position: absolute;
-            top: 0;
-            left: 0;
-          }
-
-          .item-copy {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            // width: 50px;
-            // height: 30px;
-            position: absolute;
-            padding: 6px;
-            top: 0;
-            right: 0;
-            line-height: 30px;
-            font-size: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            text-align: center;
-            background-color: #fff;
-            box-shadow: 0px 1px 4px 0px rgba(137, 159, 185, .5);
-
-            &:active {
-              box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .5)
-            }
-
-            &:hover {
-              animation: hover-back .3s;
-            }
-          }
-        }
-
-      }
-    }
-
-    .toolbar {
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-
-      img {
-        width: 14px;
-        height: 14px;
-      }
-
-      .back {
-        background-color: #1acaff;
-        box-shadow: 0px 1px 10px 0px rgba(26, 202, 255, .8);
-      }
-
-      .clear {
-        background-color: #ff7bb0;
-        box-shadow: 0px 1px 10px 0px rgba(255, 123, 176, .8);
-      }
-
-      .code {
-        background-color: #2c3e50;
-        box-shadow: 0px 1px 10px 0px rgba(44, 62, 80, .6);
-      }
-
-      .help {
-        background-color: #26ef5c;
-        box-shadow: 0px 1px 10px 0px rgba(38, 239, 92, .8);
-      }
-
-      li {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        font-size: 12px;
-        margin-left: 15px;
-        padding: 6px;
-        border-radius: 6px;
-        background-color: #fff;
-        text-align: center;
-        line-height: 20px;
-        color: #999;
-        cursor: pointer;
-        box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
-
-        &:active {
-          box-shadow: 0px 2px 8px 0px rgba(137, 159, 185, .5);
-        }
-
-        &:hover {
-          color: #2c3e50;
-          transform: scale(1.04, 1.04);
-          animation: hover-back .3s;
-        }
-
-        @keyframes hover-back {
-          25% {
-            transform: scale(1.2);
-          }
-
-          50% {
-            transform: scale(1);
-          }
-
-          75% {
-            transform: scale(1.1);
-          }
-        }
-      }
-    }
-
-    .tips {
-      position: fixed;
-      top: 10px;
-      left: 0;
-      right: 0;
-      margin: auto;
-      width: 100px;
-      line-height: 30px;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-
-      img {
-        width: 18px;
-        height: 18px;
-      }
+    img {
+      width: 18px;
+      height: 18px;
     }
   }
+}
 </style>
