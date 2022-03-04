@@ -1,7 +1,7 @@
 <template>
-  <div class="container" ref="wrapUsually">
+  <div class="container" ref="wrap">
     <ul class="list" :style="`width: ${ listWidth }px`">
-      <li class="list-item-usually"
+      <li class="list-item"
         @click="itemActive(index)"
         :class="index === active ? 'item-acitve' : ''"
         v-for="(item, index) in state.listData"
@@ -21,6 +21,9 @@
       <li class="help" @click="emit('changeList')">
         <img src="@/assets/icon/alarm-warning-line.svg" />
       </li>
+      <li class="code" @click="gotoCode">
+        <img src="@/assets/icon/github-fill.svg" />
+      </li>
       <li class="back" @click="itemActive(0)">
         <img src="@/assets/icon/arrow-go-back-line.svg" />
       </li>
@@ -37,14 +40,16 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref, nextTick, defineEmits, defineProps } from 'vue'
-import { ipcRenderer } from 'electron'
+import BScroll from '@better-scroll/core'
+import { ipcRenderer, shell } from 'electron'
 import { dateFormatter, periodTime } from '@/utils/utils'
 const { clipboard } = require('electron')
 
 const active = ref(0)
+const scrollX = ref(null)
 const isShowTips = ref(false)
 const listItem = ref(null)
-const wrapUsually = ref(null)
+const wrap = ref(null)
 const state = reactive({
   listData: []
 })
@@ -53,7 +58,7 @@ const emit = defineEmits(['changeList'])
 const prop = defineProps({
   chainCode: {
     type: Number,
-    default: 0
+    default: 1
   }
 })
 
@@ -69,21 +74,39 @@ const itemTime = computed(() => {
 
 onMounted(() => {
   const doc = document
-  nIpcListen()
+  onIpcListen()
   console.log(prop.chainCode)
-  if (prop.chainCode === 0) {
+  if (prop.chainCode === 1) {
     onCopyListen(doc)
   }
 })
 
+// 滚动初始化
+const betterScrollInit = () => {
+  scrollX.value = new BScroll(wrap.value, {
+    probeType: 0,
+    scrollX: true,
+    scrollY: false,
+    tap: true
+  })
+
+  listItem.value = document.querySelectorAll('.list-item')
+  console.log('listItem.length:', listItem.value.length)
+}
+
 // 监听主/渲染进程交互
-const nIpcListen = () => {
+const onIpcListen = () => {
   ipcRenderer.on('clip', (event, message) => {
     console.log('msg:', message)
 
     // 更新数据
     state.listData = message.clipArr
     console.log('state.listData:', state.listData)
+
+    // 数据渲染完成后 初始化滚动
+    nextTick(() => {
+      betterScrollInit()
+    })
 
     // 如果有新数据 跳到起始位置
     if (active.value !== 0) {
@@ -96,7 +119,8 @@ const onCopyListen = d => {
   d.addEventListener('keydown', e => {
     if ((e.keyCode === 67 && e.metaKey) || e.keyCode === 13 || e.keyCode === 32) {
       writeDataAndClose(state.listData[active.value])
-    } else if (e.keyCode === 27) {
+    } else if (e.keyCode === 27 || e.keyCode === 88) {
+      // 主进程关闭窗口
       ipcRenderer.send('close-window', 1)
     } else if (e.keyCode === 37 || e.keyCode === 65) {
       const moveItem = active.value !== 0 ? active.value - 1 : 0
@@ -106,6 +130,9 @@ const onCopyListen = d => {
         ? active.value + 1
         : active.value
       itemActive(moveItem)
+    } else if (e.keyCode === 67) {
+      // 切换模式
+      emit('changeList', prop.chainCode)
     } else if (e.keyCode === 73 && e.metaKey && e.altKey) {
       console.log('devtool')
       // 生产环境下 禁止打开控制台
@@ -116,6 +143,8 @@ const onCopyListen = d => {
 
 // 当前选中项
 const itemActive = idx => {
+  // 选中项滚动到屏幕中间
+  scrollX.value.scrollToElement(listItem.value[idx], 300, true, false)
   active.value = idx
 }
 
@@ -145,11 +174,18 @@ const clear = () => {
 
   // 重新获取所有item
   nextTick(() => {
-    listItem.value = document.querySelectorAll('.list-item-usually')
+    listItem.value = document.querySelectorAll('.list-item')
+
+    scrollX.value.scrollToElement(listItem.value[0], 300, true, false)
 
     // 选中第一项
     active.value = 0
   })
+}
+
+// 查看代码
+const gotoCode = () => {
+  shell.openExternal('https://github.com/Tyrus1113/Skywalker')
 }
 
 /* 监听copy/enter/esc/left/right事件
@@ -186,7 +222,7 @@ const clear = () => {
       display: flex;
       align-items: center;
 
-      .list-item-usually {
+      .list-item {
         width: 160px;
         height: 180px;
         margin: 36px 8px 0;
@@ -195,25 +231,19 @@ const clear = () => {
         border-radius: 10px;
         box-sizing: border-box;
         text-align: center;
-        background-color: #1acaff;
-        box-shadow: 0px 1px 10px 2px rgba(26, 202, 255, .8);
-        // box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
-        // background-color: #f9f9f9;
-        transition: transform .3s, color .4s, background-color .6s, box-shadow .6s;
-        // transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
-        color: #fff;
-        font-weight: 600;
+        box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
+        background-color: #f9f9f9;
+        transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
+        color: #999;
 
         &.item-acitve {
           transform: scale(1.04, 1.04);
-          color: #fff;
+          color: #2c3e50;
           // border: 2px solid rgb(44, 62, 80);
           // background-color: rgba(44, 62, 80, 0.2);
-          // background-color: #1acaff;
-          // box-shadow: 0px 1px 10px 0px rgba(26, 202, 255, .8);
+          background-color: #fff;
 
-          background-color: #ff7bb0;
-          box-shadow: 0px 1px 10px 4px rgba(255, 123, 176, .8);
+          box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .5);
         }
 
         &:hover {
