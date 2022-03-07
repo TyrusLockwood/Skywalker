@@ -48,7 +48,7 @@ const activeStyle = computed(() => {
 .container .usual-active {
   color: #2c3e50;
   background-color: #fff;
-  box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .5);
+  box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .3);
 }
 
 .usual-disable {
@@ -72,7 +72,7 @@ const activeStyle = computed(() => {
   line-height: 20px;
   color: #999;
   cursor: pointer;
-  box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
+  box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .3);
   transition: color .4s, background-color .6s, box-shadow .6s;
 
   span {
@@ -82,7 +82,7 @@ const activeStyle = computed(() => {
   }
 
   &:active {
-    box-shadow: 0px 2px 8px 0px rgba(137, 159, 185, .5);
+    box-shadow: 0px 2px 8px 0px rgba(137, 159, 185, .3);
   }
 
   &:hover {

@@ -84,7 +84,7 @@ const activeStyle = computed(() => {
   border-radius: 10px;
   box-sizing: border-box;
   text-align: center;
-  box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
+  box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .3);
   background-color: #fafafa;
   transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
   color: #999;
@@ -93,7 +93,7 @@ const activeStyle = computed(() => {
     transform: scale(1.04, 1.04);
     color: #2c3e50;
     background-color: #fff;
-    box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .5);
+    box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .3);
   }
 
   &:hover {
@@ -156,10 +156,10 @@ const activeStyle = computed(() => {
       cursor: pointer;
       text-align: center;
       background-color: #fff;
-      box-shadow: 0px 1px 4px 0px rgba(137, 159, 185, .5);
+      box-shadow: 0px 1px 4px 0px rgba(137, 159, 185, .3);
 
       &:active {
-        box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .5)
+        box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .3)
       }
 
       &:hover {
