@@ -1,13 +1,12 @@
 <template>
-  <li class="list-item"
-    @click="itemActive(index)"
-    :class="prop.listIndex === prop.listActive ? 'item-acitve' : ''">
+  <li :class="`list-item ${ activeStyle }`"
+    @click="itemActive(prop.listIndex)">
     <div class="item-container">
       <span>{{ prop.listItem.text }}</span>
     </div>
     <div class="item-info">
       <div v-show="prop.date !== ''" class="item-time">{{ itemTime(prop.listItem.date) }}</div>
-      <div v-show="prop.listIndex === prop.listActive" class="item-copy" @click="writeDataAndClose(prop.listActive)">
+      <div v-show="prop.listIndex === prop.listActive" class="item-copy" @click="writeDataAndClose(prop.listItem)">
         <img height="16" width="16" src="@/assets/icon/file-copy-line.svg" />
       </div>
     </div>
@@ -18,7 +17,6 @@
 import { defineEmits, defineProps, computed } from 'vue'
 import { dateFormatter, periodTime } from '@/utils/utils'
 
-const em = defineEmits(['itemActive', 'writeDataAndClose'])
 const prop = defineProps({
   listItem: {
     type: Object,
@@ -31,15 +29,20 @@ const prop = defineProps({
   listActive: {
     type: Number,
     default: 0
+  },
+  mode: {
+    type: Number,
+    default: 1
   }
 })
+const em = defineEmits(['itemActive', 'writeDataAndClose'])
 
 const itemActive = idx => {
   em('itemActive', idx)
 }
 
-const writeDataAndClose = act => {
-  em('writeDataAndClose', act)
+const writeDataAndClose = txt => {
+  em('writeDataAndClose', txt)
 }
 
 const itemTime = computed(() => {
@@ -47,9 +50,24 @@ const itemTime = computed(() => {
     return periodTime(dateFormatter('YYYY-MM-DD HH:mm:ss', time))
   }
 })
+
+const activeStyle = computed(() => {
+  let style = ''
+  if (prop.mode === 2) {
+    style += 'list-disable '
+  }
+  if (prop.listActive === prop.listIndex) {
+    style += 'item-acitve '
+  }
+  return style
+})
 </script>
 
 <style scoped lang="scss">
+.list-disable {
+  box-shadow: none !important;
+  background-color: #fafafa !important;
+}
 .list-item {
   width: 160px;
   height: 180px;
@@ -60,17 +78,14 @@ const itemTime = computed(() => {
   box-sizing: border-box;
   text-align: center;
   box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
-  background-color: #f9f9f9;
+  background-color: #fafafa;
   transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
   color: #999;
 
   &.item-acitve {
     transform: scale(1.04, 1.04);
     color: #2c3e50;
-    // border: 2px solid rgb(44, 62, 80);
-    // background-color: rgba(44, 62, 80, 0.2);
     background-color: #fff;
-
     box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .5);
   }
 
@@ -120,11 +135,9 @@ const itemTime = computed(() => {
       display: flex;
       align-items: center;
       justify-content: center;
-      // width: 50px;
-      // height: 30px;
       position: absolute;
-      padding: 6px;
-      top: 0;
+      padding: 4px;
+      top: 2px;
       right: 0;
       line-height: 30px;
       font-size: 12px;
@@ -140,6 +153,20 @@ const itemTime = computed(() => {
 
       &:hover {
         animation: hover-back .3s;
+      }
+
+      @keyframes hover-back {
+        25% {
+          transform: scale(1.2);
+        }
+
+        50% {
+          transform: scale(1);
+        }
+
+        75% {
+          transform: scale(1.1);
+        }
       }
     }
   }

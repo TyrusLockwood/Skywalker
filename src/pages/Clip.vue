@@ -2,13 +2,26 @@
   <div class="container" ref="wrap">
     <ul class="list" :style="`width: ${ listWidth }px`">
       <listItem
-        @itemActive="itemActive(index)"
+        @itemActive="itemActive"
+        @writeDataAndClose="writeDataAndClose"
         v-for="(item, index) in state.listData"
         :listItem="item"
         :listIndex="index"
         :listActive="active"
+        :mode="mode"
         :key="index">
       </listItem>
+    </ul>
+    <ul class="usual-list" v-show="state.usualData.length">
+      <usualItem
+        @itemUsual="writeDataAndClose"
+        v-for="(item, index) in state.usualData"
+        :usualItem="item"
+        :usualIndex="index"
+        :usualActive="usual"
+        :mode="mode"
+        :key="index">
+      </usualItem>
     </ul>
     <toolbar
       @itemActive="itemActive(0)"
@@ -16,8 +29,8 @@
       @gotoCode="gotoCode">
     </toolbar>
     <div class="tips" v-show="isShowTips">
-      <img src="@/assets/icon/check-line.svg" />
-      复制完成
+      <img src="@/assets/icon/checkbox-multiple-line.svg" />
+      复制成功
     </div>
   </div>
 </template>
@@ -26,17 +39,35 @@
 import { computed, onMounted, reactive, ref, nextTick } from 'vue'
 import BScroll from '@better-scroll/core'
 import { ipcRenderer, shell } from 'electron'
+import keyCode from '@/utils/keyCode'
 import listItem from '@/components/listItem.vue'
 import toolbar from '@/components/toolbar.vue'
+import usualItem from '@/components/usualItem.vue'
 const { clipboard } = require('electron')
 
 const active = ref(0)
+const usual = ref(0)
 const scrollX = ref(null)
 const isShowTips = ref(false)
 const listItemEL = ref(null)
 const wrap = ref(null)
+const mode = ref(1)
 const state = reactive({
-  listData: []
+  listData: [],
+  usualData: [
+    {
+      text: '1234567890101112131415161718192021222324'
+    },
+    {
+      text: '415161718192021222324'
+    },
+    {
+      text: '12'
+    },
+    {
+      text: 'const scrollX = ref(null)const isShowTips = ref(false);const wrap = ref(null) const wrap = ref(null)'
+    }
+  ]
 })
 
 const listWidth = computed(() => {
@@ -85,53 +116,74 @@ const onIpcListen = () => {
 
 const onCopyListen = d => {
   d.addEventListener('keydown', e => {
-    if ((e.keyCode === 67 && e.metaKey) || e.keyCode === 13 || e.keyCode === 32) {
-      writeDataAndClose(state.listData[active.value])
-    } else if (e.keyCode === 27 || e.keyCode === 88) {
+    if (keyCode.cmdCOrReturnOrSpace(e)) {
+      // 选中当前
+      writeData(mode.value === 1
+        ? state.listData[active.value]
+        : state.usualData[usual.value])
+      close()
+    } else if (keyCode.escOrX(e)) {
       // 主进程关闭窗口
-      ipcRenderer.send('close-window', 1)
-    } else if (e.keyCode === 37 || e.keyCode === 65) {
-      const moveItem = active.value !== 0 ? active.value - 1 : 0
-      itemActive(moveItem)
-    } else if (e.keyCode === 39 || e.keyCode === 68) {
-      const moveItem = active.value !== state.listData.length - 1
-        ? active.value + 1
-        : active.value
-      itemActive(moveItem)
-    } else if (e.keyCode === 67) {
-      // 切换模式
-    } else if (e.keyCode === 73 && e.metaKey && e.altKey) {
-      console.log('devtool')
+      close()
+    } else if (keyCode.aOrLeft(e)) {
+      // 向左
+      mode.value === 1
+        ? itemActive(active.value !== 0 ? active.value - 1 : 0)
+        : itemUsual(usual.value !== 0 ? usual.value - 1 : 0)
+    } else if (keyCode.dOrRight(e)) {
+      // 向右
+      mode.value === 1
+        ? itemActive(active.value !== state.listData.length - 1 ? active.value + 1 : active.value)
+        : itemUsual(usual.value !== state.usualData.length - 1 ? usual.value + 1 : usual.value)
+    } else if (keyCode.upOrW(e)) {
+      // 切换到常用模式
+      mode.value = 2
+    } else if (keyCode.downOrS(e)) {
+      // 切换到剪贴板模式
+      mode.value = 1
+    } else if (keyCode.justF(e)) {
+      // 将当前项添加到常用模式
+
+    } else if (keyCode.cmdOptionI(e)) {
       // 生产环境下 禁止打开控制台
       e.preventDefault()
     }
   })
 }
 
-// 当前选中项
+// 当前选中项：常用模式
+const itemUsual = idx => {
+  // 选中项滚动到屏幕中间
+  usual.value = idx
+}
+
+// 当前选中项：剪贴板模式
 const itemActive = idx => {
   // 选中项滚动到屏幕中间
   scrollX.value.scrollToElement(listItemEL.value[idx], 300, true, false)
   active.value = idx
 }
 
-// 写入数据并关闭窗口
-const writeDataAndClose = data => {
-  console.log('writeDataAndClose:', data)
-
-  // 写入剪贴板
+// 写入剪贴板
+const writeData = data => {
   clipboard.writeText(data.text)
-
   isShowTips.value = true
+}
 
-  setTimeout(() => {
-    if (isShowTips.value) {
-      // 主进程关闭窗口
-      ipcRenderer.send('close-window', 1)
-    }
-    // 提示框显示200毫秒即可
-    isShowTips.value = false
-  }, 200)
+// 关闭面板
+const close = (delay = 400) => {
+  let closeTimer = null
+  closeTimer = setTimeout(() => {
+    if (isShowTips.value) isShowTips.value = false
+    ipcRenderer.send('close-window', 1)
+    clearTimeout(closeTimer)
+  }, delay)
+}
+
+// 点击回调合并方法
+const writeDataAndClose = data => {
+  writeData(data)
+  close()
 }
 
 // 清除数据
@@ -152,25 +204,6 @@ const clear = () => {
 const gotoCode = () => {
   shell.openExternal('https://github.com/Tyrus1113/Skywalker')
 }
-
-/* 监听copy/enter/esc/left/right事件
-*  JavaScript Keyboard Map (Mac layout)
-*              esc—— F1——— F2——— F3——— F4——— F5——— F6——— F7——— F8——— F9——— F10—— F11—— F12—— F13—————+
-*             |  27 | 112 | 113 | 114 | 115 | 116 | 117 | 118 | 119 | 120 | 121 | 122 | 123 |  ???  |
-*            ` ——— 1———— 2———— 3———— 4———— 5———— 6———— 7———— 8———— 9———— 0———— - ——— = ——— delete——+
-*           | 192 |  49 |  50 |  51 |  52 |  53 |  54 |  55 |  56 |  57 |  58 |  59 |  60 |   61  |
-*          tab———— Q———— W———— E———— R———— T———— Y———— U———— I———— O———— P———— [ ——— ] ——— \ ————+
-*         |   9   |  81 |  87 |  69 |  82 |  84 |  89 |  85 |  73 |  79 |  80 | 219 | 221 | 220 |
-*        caps————— A———— S———— D———— F———— G———— H———— J———— K———— L———— ; ——— ' ——— return————+
-*       |    20   |  65 |  83 |  68 |  70 |  71 |  72 |  74 |  75 |  76 | 186 | 222 |   13    |
-*      shift—————— Z———— X———— C———— V———— B———— N———— M———— , ——— . ——— / ——— shift—————————+
-*     |    16     |  90 |  88 |  67 |  86 |  66 |  78 |  77 | 188 | 190 | 191 |     16      |
-*    fn—— ctrl opt— command space—————————————————————————— command opt——+—————up————+—————+
-*   |    | 17 | 18 |   91  |            32                 |   93  | 18 |     |  38 |     |
-*  +————+————+————+———————+———————————————————————————————+———————+————left——down——right—+
-*                                                                     |  37 |  40 |  39 |
-*                                                                    +—————+—————+—————+
-*/
 </script>
 
 <style lang="scss" scoped>
@@ -188,22 +221,35 @@ const gotoCode = () => {
     align-items: center;
   }
 
-  .tips {
+  .usual-list {
     position: fixed;
     top: 10px;
-    left: 0;
-    right: 0;
-    margin: auto;
-    width: 100px;
-    line-height: 30px;
+    left: 80px;
+    width: 1000px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  .tips {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    width: 140px;
+    line-height: 40px;
     font-size: 16px;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
+    color: #fff;
+    border-radius: 6px;
+    background-color: #2c3e50;
+    box-shadow: 0px 1px 10px 0px rgba(44, 62, 80, .6);
 
     img {
       width: 18px;
       height: 18px;
+      margin-right: 6px;
     }
   }
 }
