@@ -3,6 +3,7 @@
     <ul class="list" :style="`width: ${ listWidth }px`">
       <listItem
         @itemActive="itemActive"
+        @toUsual="toUsual"
         @writeDataAndClose="writeDataAndClose"
         v-for="(item, index) in state.listData"
         :listItem="item"
@@ -54,20 +55,7 @@ const wrap = ref(null)
 const mode = ref(1)
 const state = reactive({
   listData: [],
-  usualData: [
-    {
-      text: '1234567890101112131415161718192021222324'
-    },
-    {
-      text: '415161718192021222324'
-    },
-    {
-      text: '12'
-    },
-    {
-      text: 'const scrollX = ref(null)const isShowTips = ref(false);const wrap = ref(null) const wrap = ref(null)'
-    }
-  ]
+  usualData: []
 })
 
 const listWidth = computed(() => {
@@ -95,6 +83,18 @@ const betterScrollInit = () => {
 
 // 监听主/渲染进程交互
 const onIpcListen = () => {
+  // 监听初始化数据
+  ipcRenderer.on('init-data', (event, message) => {
+    state.listData = message.clipArr
+    state.usualData = message.usualArr
+
+    // 数据渲染完成后 初始化滚动
+    nextTick(() => {
+      betterScrollInit()
+    })
+  })
+
+  // 监听新的剪贴板数据
   ipcRenderer.on('clip', (event, message) => {
     console.log('msg:', message)
 
@@ -112,6 +112,11 @@ const onIpcListen = () => {
       itemActive(0)
     }
   })
+
+  // 监听新的常用数据
+  ipcRenderer.on('usual', (event, message) => {
+    state.usualData = message.usualArr
+  })
 }
 
 const onCopyListen = d => {
@@ -123,7 +128,7 @@ const onCopyListen = d => {
         : state.usualData[usual.value])
       close()
     } else if (keyCode.escOrX(e)) {
-      // 主进程关闭窗口
+      // 主进程关闭面板
       close()
     } else if (keyCode.aOrLeft(e)) {
       // 向左
@@ -143,7 +148,7 @@ const onCopyListen = d => {
       mode.value = 1
     } else if (keyCode.justF(e)) {
       // 将当前项添加到常用模式
-
+      toUsual(state.listData[active.value])
     } else if (keyCode.cmdOptionI(e)) {
       // 生产环境下 禁止打开控制台
       e.preventDefault()
@@ -153,7 +158,6 @@ const onCopyListen = d => {
 
 // 当前选中项：常用模式
 const itemUsual = idx => {
-  // 选中项滚动到屏幕中间
   usual.value = idx
 }
 
@@ -173,11 +177,18 @@ const writeData = data => {
 // 关闭面板
 const close = (delay = 400) => {
   let closeTimer = null
+  mode.value = 1
   closeTimer = setTimeout(() => {
     if (isShowTips.value) isShowTips.value = false
     ipcRenderer.send('close-window', 1)
     clearTimeout(closeTimer)
   }, delay)
+}
+
+// 把当前项存入常用
+const toUsual = data => {
+  console.log(data)
+  ipcRenderer.send('usual-data', data.text)
 }
 
 // 点击回调合并方法

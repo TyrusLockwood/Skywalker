@@ -6,6 +6,9 @@
     </div>
     <div class="item-info">
       <div v-show="prop.date !== ''" class="item-time">{{ itemTime(prop.listItem.date) }}</div>
+      <div v-show="prop.listIndex === prop.listActive" class="item-copy item-to-usual" @click="toUsual(prop.listItem)">
+        <img height="16" width="16" src="@/assets/icon/heart-line.svg" />
+      </div>
       <div v-show="prop.listIndex === prop.listActive" class="item-copy" @click="writeDataAndClose(prop.listItem)">
         <img height="16" width="16" src="@/assets/icon/file-copy-line.svg" />
       </div>
@@ -41,8 +44,12 @@ const itemActive = idx => {
   em('itemActive', idx)
 }
 
-const writeDataAndClose = txt => {
-  em('writeDataAndClose', txt)
+const writeDataAndClose = item => {
+  em('writeDataAndClose', item)
+}
+
+const toUsual = item => {
+  em('toUsual', item)
 }
 
 const itemTime = computed(() => {
@@ -129,6 +136,10 @@ const activeStyle = computed(() => {
       position: absolute;
       top: 0;
       left: 0;
+    }
+
+    .item-to-usual {
+      right: 30px !important;
     }
 
     .item-copy {
