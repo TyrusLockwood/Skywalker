@@ -28,7 +28,6 @@ async function createWindow () {
     x: workAreaSize.width,
     y: workAreaSize.height,
     webPreferences: {
-
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -46,6 +45,7 @@ async function createWindow () {
     titleBarStyle: 'hidden',
     // 是否可以改变窗口size
     resizable: false
+    // transparent: true
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

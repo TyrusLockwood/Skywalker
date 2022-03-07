@@ -183,10 +183,10 @@ const writeData = data => {
 // 关闭面板
 const close = (delay = 400) => {
   let closeTimer = null
-  mode.value = 1
   closeTimer = setTimeout(() => {
     if (isShowTips.value) isShowTips.value = false
     ipcRenderer.send('close-window', 1)
+    mode.value = 1
     clearTimeout(closeTimer)
   }, delay)
 }
@@ -251,7 +251,7 @@ const gotoCode = () => {
   .tips {
     position: fixed;
     bottom: 10px;
-    right: 20px;
+    left: 20px;
     width: 140px;
     line-height: 40px;
     font-size: 16px;
