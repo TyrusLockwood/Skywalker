@@ -74,7 +74,13 @@ const betterScrollInit = () => {
     probeType: 0,
     scrollX: true,
     scrollY: false,
-    tap: true
+    tap: true,
+    // bounceTime: 200
+    // swipeBounceTime: 100
+    bounce: {
+      left: false,
+      right: false
+    }
   })
 
   listItemEL.value = document.querySelectorAll('.list-item')

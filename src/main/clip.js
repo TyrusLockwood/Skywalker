@@ -118,7 +118,7 @@ const listener = win => {
 
   // 失去焦点时隐藏窗口
   win.on('blur', () => {
-    win.hide()
+    // win.hide()
   })
 }
 
