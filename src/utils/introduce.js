@@ -1,6 +1,9 @@
 export default {
   usual: [
     {
+      text: '这部分是常用固定文本'
+    },
+    {
       text: '聚焦到高亮的文本'
     },
     {
