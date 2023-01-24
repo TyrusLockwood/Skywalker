@@ -19,12 +19,21 @@ const defaultArr = introduce.clip
 // 默认常用文本
 const defaultUsualArr = introduce.usual
 
+const initData = win => {
+  const clipArr = store.get('clip', defaultArr)
+  win.webContents.send('clip', { clipArr })
+
+  const usualOrigin = store.get('usual', defaultUsualArr)
+  win.webContents.send('usual', { usualArr: usualOrigin })
+}
+
 // 去除所有空格
 const trimAll = _s => _s.replace(/\s/g, '')
 
 // 监听剪贴板内容变化
 const watcher = win => {
   let currentValue = clipboard.readText()
+  console.log('currentValue:', currentValue)
 
   setInterval(() => {
     const newValue = clipboard.readText()
@@ -34,6 +43,7 @@ const watcher = win => {
 
       // 先从storage中取出原有数据
       clipArr = store.get('clip', defaultArr)
+      console.log('clipArr:', clipArr)
 
       // 去重原始值
       const uniIndex = clipArr.findIndex(i => i.text === currentValue)
@@ -132,6 +142,7 @@ const hotKey = win => {
 }
 
 export const clip = win => {
+  initData(win)
   watcher(win)
   listener(win)
   hotKey(win)

@@ -1,7 +1,8 @@
 # Skywalker
 > 一个Mac OS中的剪贴板文本存储工具，为你在码字的过程中提高效率。
 ## 项目安装
-> Node v14+
+> Node v16.13.0
+> NPM v8.1.0
 ```
 npm install
 ```
