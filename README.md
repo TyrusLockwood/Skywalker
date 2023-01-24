@@ -1,3 +1,5 @@
+
+![avatar](./usage/usage-logo.png)
 # Skywalker
 > 一个Mac OS中的剪贴板文本存储工具，为你在码字的过程中提高效率。
 ## 项目安装
