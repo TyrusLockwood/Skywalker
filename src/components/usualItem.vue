@@ -63,7 +63,6 @@ const activeStyle = computed(() => {
   height: 26px;
   line-height: 26px;
   box-sizing: border-box;
-  font-size: 14px;
   font-weight: 500;
   margin-right: 15px;
   padding: 6px;
@@ -71,12 +70,13 @@ const activeStyle = computed(() => {
   background-color: #fafafa;
   text-align: center;
   line-height: 20px;
-  color: #999;
+  color: #5d6369;
   cursor: pointer;
   box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .3);
   transition: color .4s, background-color .6s, box-shadow .6s;
 
   span {
+    font-size: 16px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

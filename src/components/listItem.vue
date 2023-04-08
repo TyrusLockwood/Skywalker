@@ -81,7 +81,7 @@ const activeStyle = computed(() => {
 }
 
 .list-item {
-  color: #666;
+  color: #5d6369;
   width: 160px;
   height: 180px;
   margin: 36px 8px 0;
@@ -123,13 +123,13 @@ const activeStyle = computed(() => {
   .item-container {
     width: 100%;
     display: block;
-    font-size: 16px;
     overflow-y: auto;
     font-weight: 500;
     overflow-x: hidden;
     height: calc(100% - 24px);
 
     span {
+      font-size: 16px;
       display: block;
       overflow: hidden;
     }

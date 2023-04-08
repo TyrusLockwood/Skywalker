@@ -83,7 +83,6 @@ const gotoCode = () => {
     background-color: #fff;
     text-align: center;
     line-height: 20px;
-    color: #999;
     cursor: pointer;
     box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .5);
 
@@ -92,7 +91,6 @@ const gotoCode = () => {
     }
 
     &:hover {
-      color: #2c3e50;
       transform: scale(1.04, 1.04);
       animation: hover-back .3s;
     }

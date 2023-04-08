@@ -19,7 +19,7 @@ export default {
       text: '最大限制为5个'
     },
     {
-      text: '试一试吧！'
+      text: '试试吧！'
     }
   ],
   clip: [
