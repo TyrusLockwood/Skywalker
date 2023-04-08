@@ -63,7 +63,8 @@ const activeStyle = computed(() => {
   height: 26px;
   line-height: 26px;
   box-sizing: border-box;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
   margin-right: 15px;
   padding: 6px;
   border-radius: 6px;

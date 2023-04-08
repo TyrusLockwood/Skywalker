@@ -1,16 +1,20 @@
 <template>
   <li :class="`list-item ${ activeStyle }`"
     @click="itemActive(prop.listIndex)">
-    <div class="item-container">
-      <span>{{ prop.listItem.text }}</span>
-    </div>
-    <div class="item-info">
-      <div v-show="prop.date !== ''" class="item-time">{{ itemTime(prop.listItem.date) }}</div>
-      <div v-show="prop.listIndex === prop.listActive" class="item-copy item-to-usual" @click="toUsual(prop.listItem)">
-        <img height="16" width="16" src="@/assets/icon/heart-line.svg" />
+    <div class="list-item-mask">
+      <div class="item-container">
+        <span>{{ prop.listItem.text }}</span>
       </div>
-      <div v-show="prop.listIndex === prop.listActive" class="item-copy" @click="writeDataAndClose(prop.listItem)">
-        <img height="16" width="16" src="@/assets/icon/file-copy-line.svg" />
+      <div class="item-info">
+        <div v-show="prop.date !== ''" class="item-time">{{ itemTime(prop.listItem.date) }}</div>
+        <div class="item-info-operation">
+          <div v-show="prop.listIndex === prop.listActive" class="item-copy" @click="toUsual(prop.listItem)">
+            <img height="16" width="16" src="@/assets/icon/heart-line.svg" />
+          </div>
+          <div v-show="prop.listIndex === prop.listActive" class="item-copy" @click="writeDataAndClose(prop.listItem)">
+            <img height="16" width="16" src="@/assets/icon/file-copy-line.svg" />
+          </div>
+        </div>
       </div>
     </div>
   </li>
@@ -75,25 +79,41 @@ const activeStyle = computed(() => {
   box-shadow: none !important;
   background-color: #fafafa !important;
 }
+
 .list-item {
+  color: #666;
   width: 160px;
   height: 180px;
   margin: 36px 8px 0;
-  padding: 12px 12px 6px;
   font-size: 12px;
   border-radius: 10px;
   box-sizing: border-box;
   text-align: center;
   box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .3);
   background-color: #fafafa;
-  transition: transform .3s, color .4s, border .6s, background-color .6s, box-shadow .6s;
-  color: #999;
+  background-position: 160px 180px;
+  transition: transform .3s, color .4s, border .6s, background-position .6s, background-color .6s, box-shadow .6s;
+
+  .list-item-mask {
+    width: 100%;
+    height: 100%;
+    padding: 12px 12px 6px;
+    box-sizing: border-box;
+  }
 
   &.item-acitve {
     transform: scale(1.04, 1.04);
     color: #2c3e50;
     background-color: #fff;
     box-shadow: 0px 2px 40px 4px rgba(137, 159, 185, .3);
+    background: radial-gradient(circle closest-corner at 120px 120px, #66cbff 10%, #fff);
+    background-position: center;
+    background-repeat: no-repeat;
+
+    .list-item-mask {
+      backdrop-filter: blur(40px);
+      background-color: rgba(255, 255, 255, .6);
+    }
   }
 
   &:hover {
@@ -101,11 +121,13 @@ const activeStyle = computed(() => {
   }
 
   .item-container {
-    display: block;
     width: 100%;
-    height: calc(100% - 35px);
-    overflow-x: hidden;
+    display: block;
+    font-size: 16px;
     overflow-y: auto;
+    font-weight: 500;
+    overflow-x: hidden;
+    height: calc(100% - 24px);
 
     span {
       display: block;
@@ -126,37 +148,36 @@ const activeStyle = computed(() => {
 
   .item-info {
     width: 100%;
-    height: 30px;
+    height: 24px;
     position: relative;
-    margin-top: 5px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     .item-time {
-      line-height: 30px;
-      font-size: 12px;
-      position: absolute;
       top: 0;
       left: 0;
+      font-size: 12px;
+      font-weight: 500;
+      user-select: none;
+      line-height: 20px;
     }
 
-    .item-to-usual {
-      right: 30px !important;
+    .item-info-operation {
+      display: flex;
     }
 
     .item-copy {
       display: flex;
       align-items: center;
       justify-content: center;
-      position: absolute;
-      padding: 4px;
-      top: 2px;
-      right: 0;
       line-height: 30px;
       font-size: 12px;
       border-radius: 6px;
       cursor: pointer;
       text-align: center;
-      background-color: #fff;
-      box-shadow: 0px 1px 4px 0px rgba(137, 159, 185, .3);
+      margin-left: 6px;
 
       &:active {
         box-shadow: inset 0px 1px 3px rgba(137, 159, 185, .3)
