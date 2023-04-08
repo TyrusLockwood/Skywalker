@@ -1,16 +1,16 @@
 <template>
   <ul class="toolbar">
     <li class="help">
-      <img src="@/assets/icon/alarm-warning-line.svg" />
+      <i class="ri-alarm-warning-line"></i>
     </li>
     <li class="code" @click="gotoCode">
-      <img src="@/assets/icon/github-fill.svg" />
+      <i class="ri-github-fill"></i>
     </li>
     <li class="back" @click="itemActive">
-      <img src="@/assets/icon/arrow-go-back-line.svg" />
+      <i class="ri-skip-back-line"></i>
     </li>
     <li class="clear" @click="clear">
-      <img src="@/assets/icon/delete-bin-line.svg" />
+      <i class="ri-delete-bin-line"></i>
     </li>
   </ul>
 </template>
@@ -41,14 +41,14 @@ const gotoCode = () => {
   position: fixed;
   top: 10px;
   right: 20px;
-  height: 30px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
 
-  img {
-    width: 14px;
-    height: 14px;
+  i {
+    color: #fff;
+    font-size: 18px;
   }
 
   .back {
@@ -72,12 +72,13 @@ const gotoCode = () => {
   }
 
   li {
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     font-size: 12px;
     margin-left: 15px;
-    padding: 6px;
     border-radius: 6px;
     background-color: #fff;
     text-align: center;

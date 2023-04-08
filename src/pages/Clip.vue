@@ -3,7 +3,7 @@
     <ul class="list" :style="`width: ${ listWidth }px`">
       <listItem
         @itemActive="itemActive"
-        @toUsual="toUsual"
+        @onUsual="onUsual"
         @writeDataAndClose="writeDataAndClose"
         v-for="(item, index) in state.listData"
         :listItem="item"
@@ -29,9 +29,13 @@
       @clear="clear"
       @gotoCode="gotoCode">
     </toolbar>
-    <div class="tips" v-show="isShowTips">
-      <img src="@/assets/icon/checkbox-multiple-line.svg" />
+    <div class="tips" :class="`${ isShowCopiedTips ? 'active' : '' }`">
+      <i class="ri-check-line"></i>
       复制成功
+    </div>
+    <div class="tips" :class="`${ isShowCollectTips ? 'active' : '' }`">
+      <i class="ri-star-line red"></i>
+      收藏成功
     </div>
   </div>
 </template>
@@ -49,7 +53,8 @@ const { clipboard } = require('electron')
 const active = ref(0)
 const usual = ref(0)
 const scrollX = ref(null)
-const isShowTips = ref(false)
+const isShowCopiedTips = ref(false)
+const isShowCollectTips = ref(false)
 const listItemEL = ref(null)
 const wrap = ref(null)
 const mode = ref(1)
@@ -154,7 +159,7 @@ const onCopyListen = d => {
       mode.value = 1
     } else if (keyCode.justF(e)) {
       // 将当前项添加到常用模式
-      toUsual(state.listData[active.value])
+      onUsual(state.listData[active.value])
     } else if (keyCode.cmdOptionI(e)) {
       // 生产环境下 禁止打开控制台
       e.preventDefault()
@@ -177,14 +182,14 @@ const itemActive = idx => {
 // 写入剪贴板
 const writeData = data => {
   clipboard.writeText(data.text)
-  isShowTips.value = true
+  isShowCopiedTips.value = true
 }
 
 // 关闭面板
 const close = (delay = 400) => {
   let closeTimer = null
   closeTimer = setTimeout(() => {
-    if (isShowTips.value) isShowTips.value = false
+    if (isShowCopiedTips.value) isShowCopiedTips.value = false
     ipcRenderer.send('close-window', 1)
     mode.value = 1
     clearTimeout(closeTimer)
@@ -192,8 +197,12 @@ const close = (delay = 400) => {
 }
 
 // 把当前项存入常用
-const toUsual = data => {
+const onUsual = data => {
   console.log(data)
+  isShowCollectTips.value = true
+  setTimeout(() => {
+    isShowCollectTips.value = false
+  }, 2000)
   ipcRenderer.send('usual-data', data.text)
 }
 
@@ -249,24 +258,36 @@ const gotoCode = () => {
   }
 
   .tips {
+    width: 100px;
+    height: 24px;
     position: fixed;
-    bottom: 10px;
-    left: 20px;
-    width: 140px;
-    line-height: 40px;
+    top: -34px;
+    left: 0;
+    right: 0;
+    margin: auto;
     font-size: 16px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #fff;
+    justify-content: space-between;
+    color: #2c3e50;
     border-radius: 6px;
-    background-color: #2c3e50;
-    box-shadow: 0px 1px 10px 0px rgba(44, 62, 80, .6);
+    background-color: #fff;
+    padding: 4px 12px;
+    box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .3);
+    transition: top .4s;
 
-    img {
-      width: 18px;
-      height: 18px;
+    &.active {
+      top: 18px;
+    }
+
+    i {
+      font-size: 20px;
+      color: #0fe370;
       margin-right: 6px;
+
+      &.red {
+        color: #ff2626;
+      }
     }
   }
 }
