@@ -4,16 +4,10 @@ export default {
       text: '这部分是常用固定文本'
     },
     {
-      text: '聚焦到高亮的文本'
-    },
-    {
       text: '通过快捷键: F'
     },
     {
       text: '设置为常用文本'
-    },
-    {
-      text: '会长期记录在App中'
     },
     {
       text: '最大限制为5个'
@@ -44,19 +38,11 @@ export default {
       date: ''
     },
     {
-      text: 'Enter/Space或点击左下角的Icon获取内容到系统剪贴板',
+      text: 'Enter/Space或点击左下角的图标获取内容到系统剪贴板',
       date: ''
     },
     {
-      text: '恭喜你 已选择的内容已存储到你的剪贴板中',
-      date: ''
-    },
-    {
-      text: '遇到问题请与我联系',
-      date: ''
-    },
-    {
-      text: 'tyrusl@163.com',
+      text: '此时 你已选择的内容已存储到系统剪贴板中',
       date: ''
     }
   ]

@@ -31,9 +31,8 @@ npm run electron:build
 - 然后通过Cmd+Shift+V调起剪贴板的面板
 - 通过快捷键: 向左A或← 向右B或→
 - 查找你刚刚复制过的文本
-- Enter/Space或点击左下角的Icon获取内容到系统剪贴板
-- 恭喜你 已选择的内容已存储到你的剪贴板中
+- Enter/Space或点击左下角的图标获取内容到系统剪贴板
+- 此时 你已选择的内容已存储到系统剪贴板中
 - 遇到问题请与我联系
-- tyrusl@163.com
 
 ![avatar](./usage/usage-3.png)
