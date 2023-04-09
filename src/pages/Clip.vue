@@ -9,6 +9,7 @@
         :listItem="item"
         :listIndex="index"
         :listActive="active"
+        :fontSize="fontSize"
         :mode="mode"
         :key="index">
       </listItem>
@@ -20,6 +21,7 @@
         :usualItem="item"
         :usualIndex="index"
         :usualActive="usual"
+        :fontSize="fontSize"
         :mode="mode"
         :key="index">
       </usualItem>
@@ -58,6 +60,7 @@ const isShowCollectTips = ref(false)
 const listItemEL = ref(null)
 const wrap = ref(null)
 const mode = ref(1)
+const fontSize = ref('normal')
 const state = reactive({
   listData: [],
   usualData: []
@@ -94,6 +97,15 @@ const betterScrollInit = () => {
 
 // 监听主/渲染进程交互
 const onIpcListen = () => {
+  // 监听设置文字大小
+  ipcRenderer.on('font-size', (event, message) => {
+    const fontSizeType = message.fontSize
+    console.log('fontSizeType:', fontSizeType)
+    if (fontSizeType) {
+      fontSize.value = fontSizeType
+    }
+  })
+
   // 监听初始化数据
   ipcRenderer.on('init-data', (event, message) => {
     state.listData = message.clipArr

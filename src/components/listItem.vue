@@ -2,11 +2,11 @@
   <li :class="`list-item ${ activeStyle }`"
     @click="itemActive(prop.listIndex)">
     <div class="list-item-mask">
-      <div class="item-container">
-        <span>{{ prop.listItem.text }}</span>
+      <div class="item-content">
+        <span :class="`${ prop.fontSize }`">{{ prop.listItem.text }}</span>
       </div>
       <div class="item-info">
-        <div v-show="prop.date !== ''" class="item-time">{{ itemTime(prop.listItem.date) }}</div>
+        <div v-show="prop.date !== ''" class="item-time" :class="`${ prop.fontSize }`">{{ itemTime(prop.listItem.date) }}</div>
         <div class="item-info-operation">
           <div v-show="prop.listIndex === prop.listActive" class="item-copy" @click="onUsual(prop.listItem)">
             <i class="ri-star-line"></i>
@@ -36,6 +36,10 @@ const prop = defineProps({
   listActive: {
     type: Number,
     default: 0
+  },
+  fontSize: {
+    type: String,
+    default: 'normal'
   },
   mode: {
     type: Number,
@@ -85,7 +89,6 @@ const activeStyle = computed(() => {
   width: 160px;
   height: 180px;
   margin: 36px 8px 0;
-  font-size: 12px;
   border-radius: 10px;
   box-sizing: border-box;
   text-align: center;
@@ -120,7 +123,7 @@ const activeStyle = computed(() => {
     color: #2c3e50;
   }
 
-  .item-container {
+  .item-content {
     width: 100%;
     display: block;
     overflow-y: auto;
@@ -132,6 +135,14 @@ const activeStyle = computed(() => {
       font-size: 16px;
       display: block;
       overflow: hidden;
+
+      &.small {
+        font-size: 14px;
+      }
+
+      &.large {
+        font-size: 20px;
+      }
     }
 
     &::-webkit-scrollbar {
@@ -162,6 +173,14 @@ const activeStyle = computed(() => {
       font-weight: 500;
       user-select: none;
       line-height: 20px;
+
+      &.small {
+        font-size: 10px;
+      }
+
+      &.large {
+        font-size: 14px;
+      }
     }
 
     .item-info-operation {

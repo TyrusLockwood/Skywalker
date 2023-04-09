@@ -5,6 +5,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
 import { clip } from './main/clip'
+import { initFontSize, setFontSize } from './main/font'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path')
 
@@ -62,8 +63,11 @@ async function createWindow () {
     global.win = null
   })
 
+  // 初始化字体
+  initFontSize(global.win)
+
   // 执行 clip
-  clip(global.win, app)
+  clip(global.win)
 }
 
 // Quit when all windows are closed.
@@ -104,6 +108,29 @@ app.on('ready', async () => {
         global.win.show()
         global.win.focus()
       }
+    },
+    {
+      label: '字体大小',
+      submenu: [
+        {
+          label: '小',
+          click: () => {
+            setFontSize.call(global, 'small')
+          }
+        },
+        {
+          label: '中',
+          click: () => {
+            setFontSize.call(global, 'normal')
+          }
+        },
+        {
+          label: '大',
+          click: () => {
+            setFontSize.call(global, 'large')
+          }
+        }
+      ]
     },
     {
       label: '退出 Skywalker',

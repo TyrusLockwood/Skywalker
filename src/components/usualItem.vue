@@ -1,6 +1,6 @@
 <template>
     <li :class="`usual-item ${ activeStyle }`" @click="itemUsual(prop.usualItem)">
-      <span>{{ prop.usualItem.text }}</span>
+      <span :class="`${ prop.fontSize }`">{{ prop.usualItem.text }}</span>
     </li>
 </template>
 
@@ -19,6 +19,10 @@ const prop = defineProps({
   usualActive: {
     type: Number,
     default: 0
+  },
+  fontSize: {
+    type: String,
+    default: 'normal'
   },
   mode: {
     type: Number,
@@ -80,6 +84,14 @@ const activeStyle = computed(() => {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+
+    &.small {
+      font-size: 14px;
+    }
+
+    &.large {
+      font-size: 20px;
+    }
   }
 
   &:active {

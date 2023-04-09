@@ -2,23 +2,17 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    clipActive: 0,
-    usuallyActive: 0
+    fontSize: 'normal'
   },
   mutations: {
-    setClipActive (state, val) {
-      state.clipActive = val
-    },
-    setUsuallyActive (state, val) {
-      state.usuallyActive = val
+    setfontSize (state, val) {
+      state.fontSize = val
     }
   },
   actions: {
-    changeClipActive (context, val) {
-      context.commit('setClipActive', val)
-    },
-    changeUsuallyActive (context, val) {
-      context.commit('setUsuallyActive', val)
+    // 废弃vuex 通过主进程下发即可 没必要全局管理
+    changefontSize (context, val) {
+      context.commit('setfontSize', val)
     }
   }
 })
