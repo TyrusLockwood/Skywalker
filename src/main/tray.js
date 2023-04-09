@@ -1,5 +1,7 @@
-// import { Menu } from 'electron'
-import { setFontSize } from './font'
+import { setFontSize, getFontSize } from './font'
+
+// 初始化时回显字体大小设置
+const fontSize = getFontSize()
 
 // 键盘监听
 export const initTray = function () {
@@ -16,18 +18,24 @@ export const initTray = function () {
       submenu: [
         {
           label: '小',
+          type: 'radio',
+          checked: fontSize === 'small',
           click: () => {
             setFontSize(this.win, 'small')
           }
         },
         {
           label: '中',
+          type: 'radio',
+          checked: fontSize === 'normal',
           click: () => {
             setFontSize(this.win, 'normal')
           }
         },
         {
           label: '大',
+          type: 'radio',
+          checked: fontSize === 'large',
           click: () => {
             setFontSize(this.win, 'large')
           }
@@ -39,5 +47,6 @@ export const initTray = function () {
       click: () => this.app.exit()
     }
   ]
+
   return contextMenu
 }
