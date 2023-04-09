@@ -5,13 +5,15 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
 import { clip } from './main/clip'
-import { initFontSize, setFontSize } from './main/font'
+import { initTray } from './main/tray'
+import { initFontSize } from './main/font'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path')
 
 const global = {
   tray: null,
-  win: null
+  win: null,
+  app
 }
 
 // Scheme must be registered before the app is ready
@@ -100,43 +102,9 @@ app.on('ready', async () => {
   createWindow()
 
   // 系统托盘
-  global.tray = new Tray(path.resolve(__dirname, './icon_48x48@3x.png'))
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: '显示面板',
-      click: () => {
-        global.win.show()
-        global.win.focus()
-      }
-    },
-    {
-      label: '字体大小',
-      submenu: [
-        {
-          label: '小',
-          click: () => {
-            setFontSize.call(global, 'small')
-          }
-        },
-        {
-          label: '中',
-          click: () => {
-            setFontSize.call(global, 'normal')
-          }
-        },
-        {
-          label: '大',
-          click: () => {
-            setFontSize.call(global, 'large')
-          }
-        }
-      ]
-    },
-    {
-      label: '退出 Skywalker',
-      click: () => app.exit()
-    }
-  ])
+  const trayIcon = path.resolve(__dirname, './icon_48x48@3x.png')
+  global.tray = new Tray(trayIcon)
+  const contextMenu = Menu.buildFromTemplate(initTray.call(global))
   global.tray.setContextMenu(contextMenu)
 })
 

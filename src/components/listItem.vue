@@ -135,6 +135,8 @@ const activeStyle = computed(() => {
       font-size: 16px;
       display: block;
       overflow: hidden;
+      // word-break: break-all;
+      word-wrap: break-word;
 
       &.small {
         font-size: 14px;

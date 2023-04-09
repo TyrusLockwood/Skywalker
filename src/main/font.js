@@ -1,13 +1,14 @@
 const Store = require('electron-store')
 const store = new Store()
 
-export const setFontSize = function (size = 'normal') {
-  console.log('this:', this)
-  this.win.webContents.send('font-size', { fontSize: size })
+// 设置字体大小
+export const setFontSize = (win, size = 'normal') => {
+  win.webContents.send('font-size', { fontSize: size })
   store.set('font-size', size)
 }
 
-export const initFontSize = function (win) {
+// 初始化字体大小
+export const initFontSize = win => {
   const fontSize = store.get('font-size', 'normal')
   if (fontSize !== 'normal') {
     win.webContents.send('font-size', { fontSize: fontSize })
