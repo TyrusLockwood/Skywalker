@@ -74,7 +74,7 @@ const activeStyle = computed(() => {
   background-color: #fafafa;
   text-align: center;
   line-height: 20px;
-  color: #5d6369;
+  color: #757d85;
   cursor: pointer;
   box-shadow: 0px 2px 20px 0px rgba(137, 159, 185, .3);
   transition: color .4s, background-color .6s, box-shadow .6s;

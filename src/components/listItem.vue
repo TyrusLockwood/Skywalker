@@ -85,7 +85,7 @@ const activeStyle = computed(() => {
 }
 
 .list-item {
-  color: #5d6369;
+  color: #757d85;
   width: 160px;
   height: 180px;
   margin: 36px 8px 0;
