@@ -1,8 +1,8 @@
 <template>
   <ul class="toolbar">
-    <li class="help">
+    <!-- <li class="help">
       <i class="ri-alarm-warning-line"></i>
-    </li>
+    </li> -->
     <li class="code" @click="gotoCode">
       <i class="ri-github-fill"></i>
     </li>

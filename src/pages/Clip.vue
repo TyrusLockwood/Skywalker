@@ -39,6 +39,14 @@
       <i class="ri-star-line red"></i>
       收藏成功
     </div>
+    <div class="tips" :class="`${ isShowSettingTips ? 'active' : '' }`">
+      <i class="ri-check-line"></i>
+      设置成功
+    </div>
+    <div class="tips" :class="`${ isShowRemoveTips ? 'active' : '' }`">
+      <i class="ri-check-line"></i>
+      删除成功
+    </div>
   </div>
 </template>
 
@@ -57,6 +65,8 @@ const usual = ref(0)
 const scrollX = ref(null)
 const isShowCopiedTips = ref(false)
 const isShowCollectTips = ref(false)
+const isShowSettingTips = ref(false)
+const isShowRemoveTips = ref(false)
 const listItemEL = ref(null)
 const wrap = ref(null)
 const mode = ref(1)
@@ -103,6 +113,11 @@ const onIpcListen = () => {
     console.log('fontSizeType:', fontSizeType)
     if (fontSizeType) {
       fontSize.value = fontSizeType
+
+      isShowSettingTips.value = true
+      setTimeout(() => {
+        isShowSettingTips.value = false
+      }, 2000)
     }
   })
 
@@ -235,6 +250,11 @@ const clear = () => {
     scrollX.value.scrollToElement(listItemEL.value[0], 300, true, false)
     // 选中第一项
     active.value = 0
+
+    isShowRemoveTips.value = true
+    setTimeout(() => {
+      isShowRemoveTips.value = false
+    }, 2000)
   })
 }
 
@@ -270,10 +290,10 @@ const gotoCode = () => {
   }
 
   .tips {
-    width: 100px;
+    width: 88px;
     height: 24px;
     position: fixed;
-    top: -34px;
+    top: -40px;
     left: 0;
     right: 0;
     margin: auto;
@@ -293,9 +313,8 @@ const gotoCode = () => {
     }
 
     i {
-      font-size: 20px;
+      font-size: 18px;
       color: #0fe370;
-      margin-right: 6px;
 
       &.red {
         color: #ff2626;
