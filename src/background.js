@@ -65,6 +65,17 @@ async function createWindow () {
     global.win = null
   })
 
+  // 监听关闭主窗口 不退出应用
+  global.win.on('close', e => {
+    e.preventDefault()
+    global.win.hide()
+  })
+
+  // 失去焦点时隐藏窗口
+  global.win.on('blur', () => {
+    global.win.hide()
+  })
+
   // 初始化字体
   initFontSize(global.win)
 
@@ -84,7 +95,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  BrowserWindow.getAllWindows().length === 0 ? createWindow() : global.win.show()
 })
 
 // This method will be called when Electron has finished

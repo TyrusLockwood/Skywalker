@@ -83,11 +83,6 @@ const listener = win => {
     })
   })
 
-  // 监听copy事件 关闭面板
-  ipcMain.on('close-window', (event, arg) => {
-    win.hide()
-  })
-
   // 监听常用文本存储
   ipcMain.on('usual-data', (event, arg) => {
     const usualOrigin = store.get('usual', defaultUsualArr)
@@ -120,14 +115,8 @@ const listener = win => {
     })
   })
 
-  // 监听关闭主窗口 不退出应用
-  win.on('close', e => {
-    e.preventDefault()
-    win.hide()
-  })
-
-  // 失去焦点时隐藏窗口
-  win.on('blur', () => {
+  // 监听copy事件 关闭面板
+  ipcMain.on('close-window', (event, arg) => {
     win.hide()
   })
 }
