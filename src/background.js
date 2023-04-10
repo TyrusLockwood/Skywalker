@@ -16,6 +16,9 @@ const global = {
   app
 }
 
+// 隐藏App默认菜单
+Menu.setApplicationMenu(null)
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
