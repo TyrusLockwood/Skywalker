@@ -293,7 +293,7 @@ const gotoCode = () => {
     width: 88px;
     height: 24px;
     position: fixed;
-    top: -40px;
+    top: -60px;
     left: 0;
     right: 0;
     margin: auto;
