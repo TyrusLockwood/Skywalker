@@ -7,12 +7,22 @@ const fontSize = getFontSize()
 export const initTray = function () {
   const contextMenu = [
     {
+      label: '关于 Skywalker',
+      sublabel: 'version',
+      role: 'about'
+    },
+    {
       label: '显示面板',
       click: () => {
         this.win.show()
         this.win.focus()
       }
     },
+    {
+      label: '刷新应用',
+      role: 'reload'
+    },
+    { type: 'separator' },
     {
       label: '字体大小',
       submenu: [
@@ -42,8 +52,9 @@ export const initTray = function () {
         }
       ]
     },
+    { type: 'separator' },
     {
-      label: '退出 Skywalker',
+      label: '退出',
       click: () => this.app.exit()
     }
   ]
